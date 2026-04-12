@@ -11,6 +11,7 @@ import Category from "./pages/Category";
 import Product from "./pages/Product";
 import SearchPage from "./pages/Search";
 import NewArrivals from "./pages/NewArrivals";
+import Outlet from "./pages/Outlet";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const AnimatedRoutes = () => {
         <Route path="/produto/:id" element={<Product />} />
         <Route path="/busca" element={<SearchPage />} />
         <Route path="/novidades" element={<NewArrivals />} />
+        <Route path="/outlet" element={<Outlet />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

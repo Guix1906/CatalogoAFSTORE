@@ -7,7 +7,6 @@ import { ProductGallery } from "@/components/product/ProductGallery";
 import { SizeSelector } from "@/components/product/SizeSelector";
 import { ColorSelector } from "@/components/product/ColorSelector";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
-import { ProductBadge } from "@/components/ui/product-badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ProductCard } from "@/components/product/ProductCard";
 import { WhatsAppButton } from "@/components/product/WhatsAppButton";
@@ -46,7 +45,6 @@ const Product = () => {
         <div className="space-y-3">
           <h1 className="text-4xl leading-tight text-gold-light">{product.name}</h1>
           <PriceDisplay price={product.price} originalPrice={product.originalPrice} discount={product.discount} />
-          {product.discount ? <ProductBadge type="oferta" className="w-fit" /> : null}
         </div>
 
         <div className="space-y-2">

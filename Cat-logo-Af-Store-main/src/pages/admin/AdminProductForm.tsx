@@ -48,6 +48,13 @@ export default function AdminProductForm() {
     navigate('/admin/dashboard');
   };
 
+  const handleRemoveImage = (indexToRemove: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: (prev.images || []).filter((_, index) => index !== indexToRemove),
+    }));
+  };
+
   if (loading) return null;
 
   return (
@@ -112,7 +119,12 @@ export default function AdminProductForm() {
             {formData.images?.map((img, idx) => (
               <div key={idx} className="aspect-square bg-brand-card border border-brand-border rounded-lg relative overflow-hidden">
                 <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                <button className="absolute top-1 right-1 bg-black/50 p-1 rounded-full text-white">
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(idx)}
+                  className="absolute top-1 right-1 bg-black/50 p-1 rounded-full text-white"
+                  aria-label="Remover imagem"
+                >
                   <X size={12} />
                 </button>
               </div>

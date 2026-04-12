@@ -18,7 +18,21 @@ export default function FloatingWhatsApp() {
 
   const handleOpenWhatsApp = async () => {
     const popup = window.open('about:blank', '_blank', 'noopener,noreferrer');
-    await configService.openWhatsApp(undefined, popup);
+
+    try {
+      const rawNumber = '99985530617';
+      const phone = rawNumber.startsWith('55') ? rawNumber : `55${rawNumber}`;
+      const customMessage = 'Olá! Vim pelo catálogo da AF STORE 🛍️\nPode me ajudar?';
+      const whatsappUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(customMessage)}`;
+
+      if (popup) {
+        popup.location.href = whatsappUrl;
+      } else {
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      if (popup) popup.close();
+    }
   };
 
   return (

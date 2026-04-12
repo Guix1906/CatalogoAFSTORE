@@ -10,14 +10,16 @@ export const SizeSelector = ({
   value?: ProductSize;
   onChange: (size: ProductSize) => void;
 }) => (
-  <div className="flex flex-wrap gap-2">
+  <div className="grid grid-cols-4 gap-2">
     {sizes.map((size) => (
       <button
         key={size}
         onClick={() => onChange(size)}
         className={cn(
-          "rounded-full border px-4 py-2 text-sm font-medium transition",
-          value === size ? "border-gold bg-gold/20 text-gold" : "border-border bg-card text-foreground",
+          "rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
+          value === size
+            ? "border-gold bg-secondary text-gold"
+            : "border-border bg-card text-foreground hover:border-gold/35 hover:text-gold",
         )}
       >
         {size}

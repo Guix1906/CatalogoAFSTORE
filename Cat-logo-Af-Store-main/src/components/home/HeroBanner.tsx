@@ -39,10 +39,14 @@ export default function HeroBanner() {
   const [current, setCurrent] = useState(0);
   const [heroImageUrls, setHeroImageUrls] = useState<string[]>([]);
   const navigate = useNavigate();
-  const slides = SLIDES.map((slide, index) => ({
-    ...slide,
-    image: heroImageUrls[index] ?? slide.image,
-  }));
+  const configuredImages = heroImageUrls.filter(Boolean).slice(0, 4);
+  const slides = configuredImages.length
+    ? configuredImages.map((image, index) => ({
+        ...SLIDES[index % SLIDES.length],
+        id: index + 1,
+        image,
+      }))
+    : SLIDES;
 
   useEffect(() => {
     let active = true;
@@ -71,6 +75,10 @@ export default function HeroBanner() {
       setCurrent((prev) => (prev + 1) % slides.length);
     }, 4000);
     return () => clearInterval(timer);
+  }, [slides.length]);
+
+  useEffect(() => {
+    setCurrent((prev) => (prev >= slides.length ? 0 : prev));
   }, [slides.length]);
 
   return (

@@ -9,18 +9,27 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setMessage('');
+
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || password.length < 6) {
+      setError('Use um email válido e senha com no mínimo 6 caracteres.');
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (isRegisterMode) {
         const { error: signUpError } = await supabase.auth.signUp({
-          email,
+          email: normalizedEmail,
           password,
           options: {
             emailRedirectTo: window.location.origin,
@@ -31,10 +40,10 @@ export default function AdminLogin() {
           throw signUpError;
         }
 
-        setError('Cadastro realizado. Verifique seu email para confirmar a conta e entrar.');
+        setMessage('Cadastro realizado. Verifique seu email para confirmar a conta e depois entrar no painel.');
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
+          email: normalizedEmail,
           password,
         });
 
@@ -47,6 +56,28 @@ export default function AdminLogin() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao autenticar');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    try {
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/admin/dashboard`,
+        },
+      });
+
+      if (oauthError) {
+        throw oauthError;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao autenticar com Google');
       setLoading(false);
     }
   };
@@ -103,6 +134,7 @@ export default function AdminLogin() {
                 required
               />
               {error && <p className="text-xs text-red-500">{error}</p>}
+              {message && <p className="text-xs text-brand-gold">{message}</p>}
             </div>
 
             <button
@@ -118,10 +150,20 @@ export default function AdminLogin() {
               onClick={() => {
                 setIsRegisterMode((prev) => !prev);
                 setError('');
+                setMessage('');
               }}
               className="w-full text-[10px] font-bold uppercase tracking-widest text-brand-text-muted hover:text-brand-gold transition-colors"
             >
               {isRegisterMode ? 'Já tenho conta' : 'Criar nova conta'}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              className="w-full border border-brand-border text-brand-text py-3 rounded-lg font-bold uppercase text-[10px] tracking-widest hover:border-brand-gold transition-colors"
+            >
+              Entrar com Google
             </button>
           </form>
         </div>

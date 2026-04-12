@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Sacramento&family=Catamaran:wght@400;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -48,6 +48,14 @@
 }
 
 @layer components {
+  .font-banner-display {
+    font-family: "Sacramento", cursive;
+  }
+
+  .font-banner-support {
+    font-family: "Catamaran", sans-serif;
+  }
+
   .btn-primary {
     @apply bg-brand-gold text-black px-10 py-5 rounded-2xl hover:bg-brand-gold-light transition-all active:scale-95 font-black uppercase tracking-[0.2em] shadow-2xl shadow-brand-gold/10;
   }

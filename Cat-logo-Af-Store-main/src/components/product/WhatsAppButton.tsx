@@ -10,14 +10,17 @@ interface WhatsAppButtonProps {
 }
 
 export default function WhatsAppButton({ product, selectedSize, selectedColor }: WhatsAppButtonProps) {
-  const customMessage = 
-    `Olá! Vim pelo catálogo da AF STORE\n` +
-    `Produto: ${product.name}\n` +
-    `Tamanho: ${selectedSize || 'A definir'}\n` +
-    `Cor: ${selectedColor || 'A definir'}\n\n` +
-    `Pode me ajudar com mais informações?`;
-  
-  const url = configService.getWhatsAppUrl(customMessage);
+  const handleWhatsApp = async () => {
+    const customMessage =
+      `Olá! Vim pelo catálogo da AF STORE\n` +
+      `Produto: ${product.name}\n` +
+      `Tamanho: ${selectedSize || 'A definir'}\n` +
+      `Cor: ${selectedColor || 'A definir'}\n\n` +
+      `Pode me ajudar com mais informações?`;
+
+    const url = await configService.getWhatsAppUrl(customMessage);
+    window.open(url, '_blank');
+  };
 
   return (
     <div className="fixed bottom-20 left-0 right-0 z-40 px-4 pb-safe">

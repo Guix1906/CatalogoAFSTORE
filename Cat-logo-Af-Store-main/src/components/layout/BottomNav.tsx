@@ -1,7 +1,6 @@
-import { Home, Grid, Sparkles, MessageCircle } from 'lucide-react';
+import { Home, Grid, Sparkles } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { configService } from '../../services/configService';
 
 export default function BottomNav() {
   const url = configService.getWhatsAppUrl();
@@ -37,10 +36,8 @@ export default function BottomNav() {
           </NavLink>
         ))}
 
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={handleWhatsApp}
           className="flex flex-col items-center gap-1 text-brand-whatsapp relative"
         >
           <motion.div
@@ -51,7 +48,7 @@ export default function BottomNav() {
             <MessageCircle size={20} fill="currentColor" fillOpacity={0.2} />
           </motion.div>
           <span className="text-[10px] font-medium">WhatsApp</span>
-        </a>
+        </button>
       </div>
     </nav>
   );

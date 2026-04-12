@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense, lazy } from 'react';
 import Header from './components/layout/Header';
 import BottomNav from './components/layout/BottomNav';
 import SidebarMenu from './components/layout/SidebarMenu';
+import FloatingWhatsApp from './components/layout/FloatingWhatsApp';
 
 // Lazy loading pages for performance
 const Home = lazy(() => import('./pages/Home'));
@@ -76,6 +77,12 @@ export default function App() {
         <main className="flex-1">
           <AnimatedRoutes />
         </main>
+
+        <Routes>
+          <Route path="/admin/*" element={null} />
+          <Route path="/produto/:id" element={null} />
+          <Route path="*" element={<FloatingWhatsApp />} />
+        </Routes>
 
         <Routes>
           <Route path="/admin/*" element={null} />

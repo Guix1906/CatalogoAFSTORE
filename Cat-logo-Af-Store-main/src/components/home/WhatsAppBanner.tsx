@@ -3,7 +3,10 @@ import { motion } from 'motion/react';
 import { configService } from '../../services/configService';
 
 export default function WhatsAppBanner() {
-  const url = configService.getWhatsAppUrl();
+  const handleWhatsApp = async () => {
+    const url = await configService.getWhatsAppUrl();
+    window.open(url, '_blank');
+  };
 
   return (
     <section className="px-4 py-8">

@@ -1,14 +1,14 @@
 import { AppConfig } from '../types';
-import configData from '../data/config.json';
+import { supabase } from '../integrations/supabase/client';
 
 export const configService = {
-  getConfig(): AppConfig {
+  async getConfig(): Promise<AppConfig> {
     return configData as AppConfig;
   },
 
   getWhatsAppUrl(customMessage?: string): string {
     const config = this.getConfig();
     const message = encodeURIComponent(customMessage || config.whatsappMessage);
-    return `https://api.whatsapp.com/send?phone=${config.whatsappNumber}&text=${message}`;
+    return `https://wa.me/${config.whatsappNumber}?text=${message}`;
   }
 };

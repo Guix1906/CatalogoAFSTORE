@@ -16,6 +16,12 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    font-family: "Cormorant Garamond", ui-serif, Georgia, serif;
+  }
+
   html {
     font-size: 16.5px;
   }

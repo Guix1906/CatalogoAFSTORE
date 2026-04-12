@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../../components/layout/PageWrapper';
 import { productService } from '../../services/productService';
 import { configService } from '../../services/configService';
+import { adminAuthService } from '../../services/adminAuthService';
 import { Product, AppConfig } from '../../types';
 import { Plus, Edit2, Trash2, Power, Settings, LogOut, ExternalLink } from 'lucide-react';
 import PriceDisplay from '../../components/ui/PriceDisplay';
@@ -11,16 +12,19 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('admin_auth');
-    if (!isAuth) {
-      navigate('/admin');
-      return;
-    }
-
     const loadData = async () => {
+      const { isAdmin, error } = await adminAuthService.isAdminUser();
+      if (!isAdmin) {
+        setAuthError(error || 'Acesso negado.');
+        setLoading(false);
+        navigate('/admin');
+        return;
+      }
+
       const [p, c] = await Promise.all([
         productService.getProducts(),
         configService.getConfig()
@@ -32,12 +36,13 @@ export default function AdminDashboard() {
     loadData();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_auth');
+  const handleLogout = async () => {
+    await adminAuthService.signOut();
     navigate('/admin');
   };
 
   if (loading) return null;
+  if (authError) return null;
 
   return (
     <PageWrapper>

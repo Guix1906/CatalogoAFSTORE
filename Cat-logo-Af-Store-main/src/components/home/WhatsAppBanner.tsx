@@ -4,8 +4,7 @@ import { configService } from '../../services/configService';
 
 export default function WhatsAppBanner() {
   const handleWhatsApp = async () => {
-    const url = await configService.getWhatsAppUrl();
-    window.open(url, '_blank');
+    await configService.openWhatsApp();
   };
 
   return (

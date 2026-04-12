@@ -79,21 +79,26 @@ export const configService = {
     const config = await this.getConfig();
     const message = encodeURIComponent(customMessage || config.whatsappMessage);
     const phone = this.normalizeWhatsAppNumber(config.whatsappNumber);
-    return `https://api.whatsapp.com/send?phone=${phone}&text=${message}`;
+    return `https://wa.me/${phone}?text=${message}`;
   },
 
-  async openWhatsApp(customMessage?: string): Promise<void> {
+  async openWhatsApp(customMessage?: string, popup?: Window | null): Promise<void> {
     try {
       const url = await this.getWhatsAppUrl(customMessage);
 
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.target = '_blank';
-      anchor.rel = 'noopener noreferrer';
-      anchor.style.display = 'none';
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
+      if (popup && !popup.closed) {
+        try {
+          popup.location.href = url;
+          return;
+        } catch {
+          popup.close();
+        }
+      }
+
+      const opened = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!opened) {
+        console.warn('Popup bloqueado ao abrir WhatsApp');
+      }
     } catch (error) {
       console.error('Erro ao abrir WhatsApp:', error);
     }

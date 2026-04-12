@@ -11,7 +11,8 @@ export default function BottomNav() {
   ];
 
   const handleWhatsApp = async () => {
-    await configService.openWhatsApp();
+    const popup = window.open('about:blank', '_blank');
+    await configService.openWhatsApp(undefined, popup);
   };
 
   return (

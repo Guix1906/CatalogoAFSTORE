@@ -19,7 +19,7 @@ export default function Header({ onMenuOpen }: HeaderProps) {
 
       <Link to="/" className="flex items-center">
         <img
-          src="/af-logo.jpeg"
+          src="/af-logo.png"
           alt="AF Store"
           className="h-10 w-auto object-contain"
         />

@@ -82,31 +82,24 @@ export const configService = {
     return `https://wa.me/${phone}?text=${message}`;
   },
 
-  async openWhatsApp(customMessage?: string): Promise<void> {
+  async openWhatsApp(customMessage?: string, popup?: Window | null): Promise<void> {
     try {
       const url = await this.getWhatsAppUrl(customMessage);
-      const isInsideFrame = window.self !== window.top;
 
-      if (isInsideFrame) {
-        if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(url);
+      if (popup && !popup.closed) {
+        try {
+          popup.location.href = url;
+          return;
+        } catch (error) {
+          console.warn('Falha ao redirecionar popup, tentando fallback:', error);
         }
-
-        window.alert('No preview, o WhatsApp pode ser bloqueado. Link copiado para você abrir fora do preview.');
-        return;
       }
 
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      const mobileUrl = url.replace('https://wa.me/', 'whatsapp://send?phone=').replace('?text=', '&text=');
-      const targetUrl = isMobile ? mobileUrl : url;
-
-      const opened = window.open(targetUrl, '_blank', 'noopener,noreferrer');
-
-      if (!opened) {
-        console.warn('Popup bloqueado ao abrir WhatsApp');
-      }
+      const opened = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!opened) window.location.href = url;
     } catch (error) {
       console.error('Erro ao abrir WhatsApp:', error);
+      if (popup && !popup.closed) popup.close();
     }
   }
 };

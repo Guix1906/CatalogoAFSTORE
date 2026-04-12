@@ -36,10 +36,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       <div className="p-3 flex-1 flex flex-col justify-between">
         <div className="space-y-1">
-          <h3 className="text-[11px] font-sans font-bold text-brand-text uppercase tracking-wider line-clamp-2">
+          <h3 className="text-[11px] font-sans font-semibold text-brand-text uppercase tracking-wider line-clamp-2">
             {product.name}
           </h3>
-          <p className="text-[8px] font-sans font-medium text-brand-text-muted uppercase tracking-[0.15em]">
+          <p className="text-[8px] font-sans font-normal text-brand-text-muted uppercase tracking-[0.15em]">
             {product.sizes.join(' | ')}
           </p>
         </div>

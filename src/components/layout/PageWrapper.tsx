@@ -14,7 +14,7 @@ export const PageWrapper = ({ children }: PageWrapperProps) => (
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="mx-auto max-w-md px-4 pb-24 pt-16"
+      className="mx-auto max-w-lg px-5 pb-24 pt-20"
     >
       {children}
     </motion.main>

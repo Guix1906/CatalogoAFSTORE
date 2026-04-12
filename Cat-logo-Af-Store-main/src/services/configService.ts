@@ -5,7 +5,7 @@ export const configService = {
   async getConfig(): Promise<AppConfig> {
     const { data, error } = await supabase
       .from('app_config')
-      .select('whatsapp_number, whatsapp_message')
+      .select('whatsapp_number, whatsapp_message, hero_image_url')
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -14,12 +14,14 @@ export const configService = {
       return {
         whatsappNumber: '5599985530617',
         whatsappMessage: 'Olá! Vim pelo catálogo da AF STORE, pode me ajudar?',
+        heroImageUrl: undefined,
       };
     }
 
     return {
       whatsappNumber: data.whatsapp_number,
       whatsappMessage: data.whatsapp_message,
+      heroImageUrl: data.hero_image_url ?? undefined,
     };
   },
 
@@ -37,6 +39,7 @@ export const configService = {
         .update({
           whatsapp_number: payload.whatsappNumber,
           whatsapp_message: payload.whatsappMessage,
+          hero_image_url: payload.heroImageUrl ?? null,
         })
         .eq('id', current.id);
 
@@ -47,6 +50,7 @@ export const configService = {
     const { error } = await supabase.from('app_config').insert({
       whatsapp_number: payload.whatsappNumber,
       whatsapp_message: payload.whatsappMessage,
+      hero_image_url: payload.heroImageUrl ?? null,
     });
 
     if (error) throw error;

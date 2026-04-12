@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../../components/layout/PageWrapper';
 import { productService } from '../../services/productService';
@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState('');
   const [actionError, setActionError] = useState('');
+  const heroImageInputRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
 
   const loadData = async () => {
@@ -81,11 +82,57 @@ export default function AdminDashboard() {
       await configService.updateConfig({
         whatsappNumber: normalized,
         whatsappMessage: config.whatsappMessage,
+        heroImageUrl: config.heroImageUrl,
       });
       await loadData();
       setActionError('');
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Erro ao atualizar WhatsApp.');
+    }
+  };
+
+  const handleSelectHeroImage = () => {
+    heroImageInputRef.current?.click();
+  };
+
+  const handleHeroImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!config) return;
+
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setActionError('Arquivo inválido. Selecione uma imagem.');
+      event.target.value = '';
+      return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+      setActionError('A imagem deve ter no máximo 3MB.');
+      event.target.value = '';
+      return;
+    }
+
+    try {
+      const heroImageUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error('Falha ao ler a imagem.'));
+        reader.readAsDataURL(file);
+      });
+
+      await configService.updateConfig({
+        whatsappNumber: config.whatsappNumber,
+        whatsappMessage: config.whatsappMessage,
+        heroImageUrl,
+      });
+
+      await loadData();
+      setActionError('');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Erro ao atualizar imagem do banner.');
+    } finally {
+      event.target.value = '';
     }
   };
 
@@ -107,7 +154,7 @@ export default function AdminDashboard() {
           </div>
           <button 
             onClick={handleLogout}
-            className="p-2 text-brand-text-muted hover:text-red-500 transition-colors"
+            className="p-2 text-brand-text-muted hover:text-brand-gold-light transition-colors"
           >
             <LogOut size={20} />
           </button>
@@ -132,10 +179,43 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <span className="text-[10px] text-brand-text-muted uppercase tracking-widest">Imagem do Banner Inicial</span>
+              <div className="flex items-center justify-between gap-3">
+                <div className="w-28 h-16 rounded-lg overflow-hidden bg-brand-bg border border-brand-border">
+                  {config?.heroImageUrl ? (
+                    <img
+                      src={config.heroImageUrl}
+                      alt="Banner inicial"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[10px] text-brand-text-muted uppercase tracking-widest">
+                      Sem imagem
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={handleSelectHeroImage}
+                  className="text-[10px] text-brand-gold font-bold uppercase tracking-widest"
+                >
+                  Adicionar Imagem
+                </button>
+                <input
+                  ref={heroImageInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleHeroImageChange}
+                  className="hidden"
+                />
+              </div>
+            </div>
           </div>
         </section>
 
-        {actionError && <p className="text-xs text-red-500 font-semibold">{actionError}</p>}
+        {actionError && <p className="text-xs text-brand-gold-light font-semibold">{actionError}</p>}
 
         {/* Products Section */}
         <section className="space-y-6">
@@ -195,7 +275,7 @@ export default function AdminDashboard() {
                     </button>
                     <button 
                       onClick={() => handleDeleteProduct(product)}
-                      className="p-2 text-brand-text-muted hover:text-red-500 transition-colors"
+                      className="p-2 text-brand-text-muted hover:text-brand-gold-light transition-colors"
                       title="Excluir"
                     >
                       <Trash2 size={16} />

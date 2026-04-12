@@ -2,9 +2,9 @@
   "name": "workspace-runner",
   "private": true,
   "scripts": {
-    "dev": "bunx vite --config Cat-logo-Af-Store-main/vite.config.ts --root Cat-logo-Af-Store-main --host 0.0.0.0",
-    "build": "bunx vite build --config Cat-logo-Af-Store-main/vite.config.ts --root Cat-logo-Af-Store-main",
-    "preview": "bunx vite preview --config Cat-logo-Af-Store-main/vite.config.ts --root Cat-logo-Af-Store-main --host 0.0.0.0"
+    "dev": "cd Cat-logo-Af-Store-main && ../node_modules/.bin/vite --host 0.0.0.0",
+    "build": "cd Cat-logo-Af-Store-main && ../node_modules/.bin/vite build",
+    "preview": "cd Cat-logo-Af-Store-main && ../node_modules/.bin/vite preview --host 0.0.0.0"
   },
   "dependencies": {
     "@google/genai": "^1.49.0",

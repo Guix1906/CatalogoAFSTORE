@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { configService } from '../../services/configService';
 
 const SLIDES = [
   {
@@ -29,14 +30,35 @@ const SLIDES = [
 
 export default function HeroBanner() {
   const [current, setCurrent] = useState(0);
+  const [heroImageUrl, setHeroImageUrl] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
+  const slides = heroImageUrl
+    ? [{ ...SLIDES[0], image: heroImageUrl }, ...SLIDES.slice(1)]
+    : SLIDES;
+
+  useEffect(() => {
+    let active = true;
+
+    configService
+      .getConfig()
+      .then((config) => {
+        if (active) setHeroImageUrl(config.heroImageUrl);
+      })
+      .catch(() => {
+        if (active) setHeroImageUrl(undefined);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % SLIDES.length);
+      setCurrent((prev) => (prev + 1) % slides.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   return (
     <div className="relative h-[60vh] w-full overflow-hidden bg-brand-bg">
@@ -51,8 +73,8 @@ export default function HeroBanner() {
         >
           <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/20 to-transparent z-10" />
           <img
-            src={SLIDES[current].image}
-            alt={SLIDES[current].title}
+            src={slides[current].image}
+            alt={slides[current].title}
             className="h-full w-full object-cover opacity-60"
             referrerPolicy="no-referrer"
           />
@@ -64,7 +86,7 @@ export default function HeroBanner() {
               transition={{ delay: 0.2 }}
               className="text-3xl md:text-5xl font-serif font-bold text-brand-text mb-2"
             >
-              {SLIDES[current].title}
+               {slides[current].title}
             </motion.h2>
             <motion.p 
               initial={{ y: 20, opacity: 0 }}
@@ -72,13 +94,13 @@ export default function HeroBanner() {
               transition={{ delay: 0.3 }}
               className="text-brand-text-muted text-sm uppercase tracking-widest mb-6"
             >
-              {SLIDES[current].subtitle}
+               {slides[current].subtitle}
             </motion.p>
             <motion.button
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              onClick={() => navigate(SLIDES[current].link)}
+               onClick={() => navigate(slides[current].link)}
               className="flex items-center gap-2 bg-brand-gold text-brand-bg px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-brand-gold-light transition-colors"
             >
               Ver Coleção <ChevronRight size={16} />
@@ -88,7 +110,7 @@ export default function HeroBanner() {
       </AnimatePresence>
 
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}

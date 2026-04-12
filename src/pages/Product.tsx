@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { products } from "@/data/products";
 import { PageWrapper } from "@/components/layout/PageWrapper";
@@ -17,6 +17,7 @@ import { getProductWhatsAppUrl } from "@/lib/whatsapp";
 const Product = () => {
   const { id = "" } = useParams();
   const product = products.find((item) => item.id === id);
+  const navigate = useNavigate();
   const [size, setSize] = useState<ProductSize | undefined>();
   const [color, setColor] = useState<ProductColor | undefined>();
 
@@ -36,9 +37,9 @@ const Product = () => {
   return (
     <PageWrapper>
       <div className="space-y-5 pb-16">
-        <Link to={-1 as any} className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-xs text-muted-foreground">
           <ChevronLeft size={14} /> Voltar
-        </Link>
+        </button>
 
         <ProductGallery images={product.images} name={product.name} />
 

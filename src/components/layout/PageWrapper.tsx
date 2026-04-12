@@ -1,9 +1,10 @@
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 
 interface PageWrapperProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const PageWrapper = ({ children }: PageWrapperProps) => (

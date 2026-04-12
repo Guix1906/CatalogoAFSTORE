@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import { motion } from 'motion/react';
 
 export default function BottomNav() {
-  const url = configService.getWhatsAppUrl();
   const navItems = [
     { to: '/', icon: Home, label: 'Início' },
     { to: '/categorias', icon: Grid, label: 'Categorias' },
@@ -35,20 +34,6 @@ export default function BottomNav() {
             )}
           </NavLink>
         ))}
-
-        <button
-          onClick={handleWhatsApp}
-          className="flex flex-col items-center gap-1 text-brand-whatsapp relative"
-        >
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="bg-brand-whatsapp/10 p-1.5 rounded-full"
-          >
-            <MessageCircle size={20} fill="currentColor" fillOpacity={0.2} />
-          </motion.div>
-          <span className="text-[10px] font-medium">WhatsApp</span>
-        </button>
       </div>
     </nav>
   );

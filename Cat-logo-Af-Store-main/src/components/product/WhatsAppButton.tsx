@@ -27,7 +27,7 @@ export default function WhatsAppButton({ product, selectedSize, selectedColor }:
     };
 
     updateUrl();
-  }, [product, selectedSize, selectedColor]);
+  }, [product.name, selectedSize, selectedColor]);
 
   return (
     <div className="fixed bottom-20 left-0 right-0 z-40 px-4 pb-safe">

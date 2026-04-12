@@ -9,11 +9,11 @@ interface ProductSectionProps {
 
 export const ProductSection = ({ title, products, horizontal }: ProductSectionProps) => (
   <section className="space-y-3">
-    <h2 className="text-2xl text-gold">{title}</h2>
+    {title ? <h2 className="text-2xl text-gold">{title}</h2> : null}
     {horizontal ? (
       <div className="flex gap-3 overflow-x-auto pb-1">
         {products.map((product, index) => (
-          <div className="min-w-[190px] flex-1" key={product.id}>
+          <div className="min-w-[196px] flex-1" key={product.id}>
             <ProductCard product={product} index={index} />
           </div>
         ))}

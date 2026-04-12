@@ -83,15 +83,19 @@ export const configService = {
   },
 
   async openWhatsApp(customMessage?: string): Promise<void> {
-    const popup = window.open('about:blank', '_blank');
-    const url = await this.getWhatsAppUrl(customMessage);
+    try {
+      const url = await this.getWhatsAppUrl(customMessage);
 
-    if (popup) {
-      popup.opener = null;
-      popup.location.replace(url);
-      return;
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+      anchor.style.display = 'none';
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+    } catch (error) {
+      console.error('Erro ao abrir WhatsApp:', error);
     }
-
-    window.open(url, '_blank');
   }
 };

@@ -10,9 +10,12 @@ export default function MainHeader() {
         <Menu size={20} />
       </button>
 
-      <Link to="/" className="flex flex-col items-center">
-        <span className="text-[10px] font-sans font-black uppercase tracking-[0.4em] text-brand-gold-light -mb-1">Antigravity</span>
-        <span className="text-[14px] font-serif font-black uppercase tracking-[0.1em] text-brand-text">Performance</span>
+      <Link to="/" className="flex items-center">
+        <img
+          src="/af-logo.jpeg"
+          alt="AF Store"
+          className="h-10 w-auto object-contain"
+        />
       </Link>
 
       <button 

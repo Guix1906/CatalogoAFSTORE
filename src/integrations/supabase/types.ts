@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           hero_image_url: string | null
+          hero_image_urls: Json | null
           id: string
           updated_at: string
           whatsapp_message: string
@@ -26,6 +27,7 @@ export type Database = {
         Insert: {
           created_at?: string
           hero_image_url?: string | null
+          hero_image_urls?: Json | null
           id?: string
           updated_at?: string
           whatsapp_message: string
@@ -34,6 +36,7 @@ export type Database = {
         Update: {
           created_at?: string
           hero_image_url?: string | null
+          hero_image_urls?: Json | null
           id?: string
           updated_at?: string
           whatsapp_message?: string

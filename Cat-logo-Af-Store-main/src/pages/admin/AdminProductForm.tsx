@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import PageWrapper from '../../components/layout/PageWrapper';
 import { productService } from '../../services/productService';
+import { adminAuthService } from '../../services/adminAuthService';
 import { Product } from '../../types';
 import { ChevronLeft, Save, Image as ImageIcon, Plus, X } from 'lucide-react';
 
@@ -25,13 +26,13 @@ export default function AdminProductForm() {
   });
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('admin_auth');
-    if (!isAuth) {
-      navigate('/admin');
-      return;
-    }
-
     const loadProduct = async () => {
+      const { isAuthenticated } = await adminAuthService.isAuthenticated();
+      if (!isAuthenticated) {
+        navigate('/admin');
+        return;
+      }
+
       if (id) {
         const p = await productService.getProductById(id);
         if (p) setFormData(p);

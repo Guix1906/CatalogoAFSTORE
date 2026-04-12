@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.49.0",
+    "@lovable.dev/cloud-auth-js": "^1.1.1",
     "@supabase/supabase-js": "^2.103.0",
     "@tailwindcss/vite": "^4.2.2",
     "@types/express": "^5.0.6",

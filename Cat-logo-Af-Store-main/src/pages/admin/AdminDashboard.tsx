@@ -21,10 +21,8 @@ export default function AdminDashboard() {
     }
 
     const loadData = async () => {
-      const [p, c] = await Promise.all([
-        productService.getProducts(),
-        configService.getConfig()
-      ]);
+      const p = await productService.getProducts();
+      const c = configService.getConfig();
       setProducts(p);
       setConfig(c);
       setLoading(false);

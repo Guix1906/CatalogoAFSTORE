@@ -2,13 +2,13 @@ import { AppConfig } from '../types';
 import configData from '../data/config.json';
 
 export const configService = {
-  async getConfig(): Promise<AppConfig> {
+  getConfig(): AppConfig {
     return configData as AppConfig;
   },
 
-  async getWhatsAppUrl(customMessage?: string): Promise<string> {
-    const config = await this.getConfig();
+  getWhatsAppUrl(customMessage?: string): string {
+    const config = this.getConfig();
     const message = encodeURIComponent(customMessage || config.whatsappMessage);
-    return `https://wa.me/${config.whatsappNumber}?text=${message}`;
+    return `https://api.whatsapp.com/send?phone=${config.whatsappNumber}&text=${message}`;
   }
 };

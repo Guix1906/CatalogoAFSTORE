@@ -4,16 +4,12 @@ import { motion } from 'motion/react';
 import { configService } from '../../services/configService';
 
 export default function BottomNav() {
+  const url = configService.getWhatsAppUrl();
   const navItems = [
     { to: '/', icon: Home, label: 'Início' },
     { to: '/categorias', icon: Grid, label: 'Categorias' },
     { to: '/novidades', icon: Sparkles, label: 'Novidades' },
   ];
-
-  const handleWhatsApp = async () => {
-    const url = await configService.getWhatsAppUrl();
-    window.open(url, '_blank');
-  };
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-brand-bg border-t border-brand-gold/20 pb-safe">
@@ -41,8 +37,10 @@ export default function BottomNav() {
           </NavLink>
         ))}
 
-        <button
-          onClick={handleWhatsApp}
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex flex-col items-center gap-1 text-brand-whatsapp relative"
         >
           <motion.div
@@ -53,7 +51,7 @@ export default function BottomNav() {
             <MessageCircle size={20} fill="currentColor" fillOpacity={0.2} />
           </motion.div>
           <span className="text-[10px] font-medium">WhatsApp</span>
-        </button>
+        </a>
       </div>
     </nav>
   );

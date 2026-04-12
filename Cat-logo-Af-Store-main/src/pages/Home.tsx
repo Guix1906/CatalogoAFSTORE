@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import HeroBanner from '../components/home/HeroBanner';
-import CategoryScroll from '../components/home/CategoryScroll';
+import CategoryTabs from '../components/layout/CategoryTabs';
 import ProductSection from '../components/home/ProductSection';
 import WhatsAppBanner from '../components/home/WhatsAppBanner';
 import { productService } from '../services/productService';
@@ -24,36 +24,38 @@ export default function Home() {
 
   return (
     <PageWrapper>
-      <HeroBanner />
-      <CategoryScroll />
-      
-      {bestSellers.length > 0 && (
-        <ProductSection 
-          title="Mais Vendidos" 
-          products={bestSellers} 
-          layout="grid"
-        />
-      )}
+      <div className="pt-16"> {/* Spacer for fixed header */}
+        <CategoryTabs />
+        <HeroBanner />
+        
+        {bestSellers.length > 0 && (
+          <ProductSection 
+            title="Mais Vendidos" 
+            products={bestSellers} 
+            layout="grid"
+          />
+        )}
 
-      {newArrivals.length > 0 && (
-        <ProductSection 
-          title="Novidades" 
-          products={newArrivals} 
-          layout="scroll"
-          viewAllLink="/novidades"
-        />
-      )}
+        {newArrivals.length > 0 && (
+          <ProductSection 
+            title="Novidades" 
+            products={newArrivals} 
+            layout="scroll"
+            viewAllLink="/novidades"
+          />
+        )}
 
-      {onSale.length > 0 && (
-        <ProductSection 
-          title="Promoções" 
-          products={onSale} 
-          layout="grid"
-          viewAllLink="/categoria/ofertas"
-        />
-      )}
+        {onSale.length > 0 && (
+          <ProductSection 
+            title="Promoções" 
+            products={onSale} 
+            layout="grid"
+            viewAllLink="/categoria/ofertas"
+          />
+        )}
 
-      <WhatsAppBanner />
+        <WhatsAppBanner />
+      </div>
     </PageWrapper>
   );
 }

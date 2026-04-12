@@ -9,7 +9,7 @@ const SLIDES = [
     id: 1,
     title: "Feminino — Elegance",
     subtitle: "A união entre luxo e movimento",
-    image: "https://picsum.photos/seed/fitness-hero1/1200/800",
+    image: "/antigravity-assets/hero_banner_performance.png",
     link: "/categoria/feminino"
   },
   {

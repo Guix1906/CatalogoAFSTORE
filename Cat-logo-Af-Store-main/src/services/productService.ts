@@ -32,7 +32,7 @@ const toProduct = (row: ProductRow): Product => {
   };
 };
 
-const sanitizePayload = (product: Partial<Product>) => ({
+const sanitizePayload = (product: Partial<Product>) => {
   const baseName = (product.name || '').trim();
   const slugFromName = baseName
     .toLowerCase()
@@ -42,23 +42,23 @@ const sanitizePayload = (product: Partial<Product>) => ({
     .replace(/^-+|-+$/g, '');
 
   return {
-  name: (product.name || '').trim(),
-  slug: (product.slug || slugFromName || `produto-${Date.now()}`).trim(),
-  category: (product.category || 'leggings') as string,
-  price: Number(product.price || 0),
-  original_price: product.originalPrice ?? null,
-  discount: product.discount ?? null,
-  images: (product.images || []).filter(Boolean),
-  sizes: (product.sizes || ['P', 'M', 'G']) as string[],
-  colors: product.colors || [],
-  measurements: product.measurements || null,
-  is_new: Boolean(product.isNew),
-  is_best_seller: Boolean(product.isBestSeller),
-  is_on_sale: Boolean(product.isOnSale),
-  active: product.active ?? true,
-  gender: product.gender || 'feminino',
-  tags: (product.tags || []).filter(Boolean),
-  description: product.description || '',
+    name: (product.name || '').trim(),
+    slug: (product.slug || slugFromName || `produto-${Date.now()}`).trim(),
+    category: (product.category || 'leggings') as string,
+    price: Number(product.price || 0),
+    original_price: product.originalPrice ?? null,
+    discount: product.discount ?? null,
+    images: (product.images || []).filter(Boolean),
+    sizes: (product.sizes || ['P', 'M', 'G']) as string[],
+    colors: product.colors || [],
+    measurements: product.measurements || null,
+    is_new: Boolean(product.isNew),
+    is_best_seller: Boolean(product.isBestSeller),
+    is_on_sale: Boolean(product.isOnSale),
+    active: product.active ?? true,
+    gender: product.gender || 'feminino',
+    tags: (product.tags || []).filter(Boolean),
+    description: product.description || '',
   };
 };
 

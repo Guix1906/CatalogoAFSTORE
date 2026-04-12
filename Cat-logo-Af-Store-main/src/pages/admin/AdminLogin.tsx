@@ -36,21 +36,15 @@ export default function AdminLogin() {
           },
         });
 
-        if (signUpError) {
-          throw signUpError;
-        }
-
-        setMessage('Cadastro realizado. Verifique seu email para confirmar a conta e depois entrar no painel.');
+        if (signUpError) throw signUpError;
+        setMessage('Cadastro realizado. Verifique seu email para confirmar a conta.');
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: normalizedEmail,
           password,
         });
 
-        if (signInError) {
-          throw signInError;
-        }
-
+        if (signInError) throw signInError;
         navigate('/admin/dashboard');
       }
     } catch (err) {
@@ -73,9 +67,7 @@ export default function AdminLogin() {
         },
       });
 
-      if (oauthError) {
-        throw oauthError;
-      }
+      if (oauthError) throw oauthError;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao autenticar com Google');
       setLoading(false);
@@ -85,86 +77,91 @@ export default function AdminLogin() {
   React.useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate('/admin/dashboard');
-      }
+      if (data.session) navigate('/admin/dashboard');
     };
-
     checkSession();
   }, [navigate]);
 
   return (
     <PageWrapper>
-      <div className="min-h-[70vh] flex flex-col items-center justify-center px-6">
-        <div className="w-full max-w-sm space-y-8 bg-brand-card p-8 rounded-2xl border border-brand-border">
+      <div className="min-h-[85vh] flex flex-col items-center justify-center px-6">
+        <div className="w-full max-w-sm space-y-8 bg-brand-card p-8 rounded-3xl border border-brand-border shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-gold to-transparent opacity-50" />
+          
           <div className="text-center space-y-2">
-            <div className="bg-brand-gold/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="text-brand-gold" size={32} />
+            <div className="bg-brand-gold/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-brand-gold/20 shadow-inner">
+              <Lock className="text-brand-gold" size={36} />
             </div>
-            <h1 className="text-2xl font-serif font-bold text-brand-text">Acesso Restrito</h1>
-            <p className="text-xs text-brand-text-muted uppercase tracking-widest">Painel Administrativo</p>
+            <h1 className="text-3xl font-serif italic text-brand-gold">Acesso Restrito</h1>
+            <p className="text-[10px] text-brand-text-muted font-sans font-extrabold uppercase tracking-[0.2em]">Painel Administrativo Antigravity</p>
           </div>
 
-          <form onSubmit={handleAuth} className="space-y-6">
+          <form onSubmit={handleAuth} className="space-y-6 pt-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted">
-                Email
+              <label className="text-[9px] font-sans font-bold uppercase tracking-[0.2em] text-brand-text-muted ml-1">
+                Email Corporativo
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-gold transition-colors"
+                className="w-full bg-brand-bg border border-brand-border rounded-xl px-4 py-4 text-sm font-sans focus:outline-none focus:border-brand-gold transition-all shadow-inner"
                 placeholder="seu@email.com"
                 required
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted">
-                Senha
+            <div className="space-y-2 relative">
+              <label className="text-[9px] font-sans font-bold uppercase tracking-[0.2em] text-brand-text-muted ml-1">
+                Chave de Acesso
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-gold transition-colors"
-                placeholder="Digite sua senha"
+                className="w-full bg-brand-bg border border-brand-border rounded-xl px-4 py-4 text-sm font-sans focus:outline-none focus:border-brand-gold transition-all shadow-inner"
+                placeholder="••••••••"
                 minLength={6}
                 required
               />
-              {error && <p className="text-xs text-red-500">{error}</p>}
-              {message && <p className="text-xs text-brand-gold">{message}</p>}
+              {error && <p className="text-[10px] text-red-400 font-bold uppercase tracking-wider mt-2">{error}</p>}
+              {message && <p className="text-[10px] text-brand-gold font-bold uppercase tracking-wider mt-2">{message}</p>}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-brand-gold text-brand-bg py-4 rounded-lg font-bold uppercase text-xs tracking-widest hover:bg-brand-gold-light transition-colors"
+              className="btn-primary w-full py-5 flex items-center justify-center gap-2 group shadow-xl"
             >
-              {loading ? 'Processando...' : isRegisterMode ? 'Cadastrar Admin' : 'Entrar no Painel'}
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              ) : (
+                isRegisterMode ? 'Criar Acesso' : 'Autenticar'
+              )}
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setIsRegisterMode((prev) => !prev);
-                setError('');
-                setMessage('');
-              }}
-              className="w-full text-[10px] font-bold uppercase tracking-widest text-brand-text-muted hover:text-brand-gold transition-colors"
-            >
-              {isRegisterMode ? 'Já tenho conta' : 'Criar nova conta'}
-            </button>
+            <div className="flex flex-col gap-4 pt-4 border-t border-brand-border/50">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsRegisterMode(!isRegisterMode);
+                  setError('');
+                  setMessage('');
+                }}
+                className="text-[9px] font-sans font-extrabold uppercase tracking-[0.2em] text-brand-text-muted hover:text-brand-gold transition-colors"
+              >
+                {isRegisterMode ? 'Voltar para Login' : 'Solicitar Novo Acesso'}
+              </button>
 
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              className="w-full border border-brand-border text-brand-text py-3 rounded-lg font-bold uppercase text-[10px] tracking-widest hover:border-brand-gold transition-colors"
-            >
-              Entrar com Google
-            </button>
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="w-full bg-brand-bg border border-brand-border text-brand-text py-4 rounded-xl font-sans font-bold uppercase text-[9px] tracking-[0.2em] hover:bg-brand-card hover:border-brand-gold transition-all flex items-center justify-center gap-2"
+              >
+                Continuar com Google
+              </button>
+            </div>
           </form>
         </div>
       </div>

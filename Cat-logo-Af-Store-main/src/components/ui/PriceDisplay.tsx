@@ -20,20 +20,20 @@ export default function PriceDisplay({ price, originalPrice, discount, className
     <div className={cn('flex flex-col gap-0.5', className)}>
       <div className="flex items-baseline gap-2">
         <span className={cn(
-          'font-bold text-brand-gold',
-          size === 'lg' ? 'text-2xl' : 'text-sm'
+          'font-sans font-extrabold text-brand-gold tracking-tight',
+          size === 'lg' ? 'text-3xl' : 'text-base'
         )}>
           {format(price)}
         </span>
         {originalPrice && (
-          <span className="text-[10px] text-brand-text-muted line-through">
+          <span className="text-[10px] font-sans font-medium text-brand-text-muted line-through opacity-50">
             {format(originalPrice)}
           </span>
         )}
       </div>
       {discount && (
-        <span className="text-[10px] text-brand-whatsapp font-bold">
-          {discount}% OFF
+        <span className="text-[9px] font-sans font-black text-brand-whatsapp uppercase tracking-widest">
+          Performance Discount • {discount}% OFF
         </span>
       )}
     </div>

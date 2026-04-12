@@ -37,28 +37,40 @@ export default function ProductPage() {
     loadProduct();
   }, [id]);
 
-  if (!product) return null;
+  if (!product) return (
+    <div className="min-h-screen bg-brand-bg flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 
   return (
     <PageWrapper>
-      <div className="sticky top-0 z-50 px-4 h-16 flex items-center justify-between bg-brand-bg/80 backdrop-blur-md">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-brand-text bg-brand-card rounded-full">
-          <ChevronLeft size={24} />
+      {/* Premium Header */}
+      <div className="sticky top-0 z-50 px-4 h-20 flex items-center justify-between bg-brand-bg/90 backdrop-blur-xl border-b border-brand-border/50">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="w-10 h-10 flex items-center justify-center text-brand-text bg-brand-card/50 border border-brand-border rounded-full hover:border-brand-gold transition-colors"
+        >
+          <ChevronLeft size={20} />
         </button>
-        <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-text-muted truncate max-w-[200px]">
-          {product.name}
-        </h2>
+        <div className="flex flex-col items-center">
+          <span className="text-[8px] font-sans font-extrabold uppercase tracking-[0.3em] text-brand-gold-light">Antigravity</span>
+          <h2 className="text-[10px] font-sans font-bold uppercase tracking-[0.1em] text-brand-text truncate max-w-[150px]">
+            {product.name}
+          </h2>
+        </div>
         <div className="w-10" />
       </div>
 
       <ProductGallery images={product.images} />
 
-      <div className="p-6 space-y-8">
+      <div className="p-8 space-y-10">
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            {product.isBestSeller && <Badge variant="gold">Mais Vendido</Badge>}
+            {product.isBestSeller && <Badge variant="gold">Performance Pick</Badge>}
+            {product.isNew && <Badge variant="gold">Lançamento</Badge>}
           </div>
-          <h1 className="text-3xl font-serif font-bold text-brand-text leading-tight">
+          <h1 className="text-4xl font-serif italic text-brand-text leading-[1.1]">
             {product.name}
           </h1>
           <PriceDisplay 
@@ -69,29 +81,31 @@ export default function ProductPage() {
           />
         </div>
 
-        {product.colors && (
-          <ColorSelector 
-            colors={product.colors} 
-            selected={selectedColor} 
-            onSelect={setSelectedColor} 
+        <div className="space-y-6 bg-brand-card/30 p-6 rounded-3xl border border-brand-border/50">
+          {product.colors && (
+            <ColorSelector 
+              colors={product.colors} 
+              selected={selectedColor} 
+              onSelect={setSelectedColor} 
+            />
+          )}
+
+          <SizeSelector 
+            sizes={product.sizes} 
+            selected={selectedSize} 
+            onSelect={setSelectedSize} 
           />
-        )}
+        </div>
 
-        <SizeSelector 
-          sizes={product.sizes} 
-          selected={selectedSize} 
-          onSelect={setSelectedSize} 
-        />
-
-        {/* Accordions */}
-        <div className="space-y-4 pt-4">
-          <div className="border-t border-brand-border">
+        {/* Information Accordions */}
+        <div className="space-y-2">
+          <div className="bg-brand-card/20 rounded-2xl border border-brand-border/30 overflow-hidden">
             <button 
               onClick={() => setIsDescOpen(!isDescOpen)}
-              className="w-full py-4 flex items-center justify-between text-left"
+              className="w-full px-6 py-5 flex items-center justify-between text-left group"
             >
-              <span className="text-xs font-bold uppercase tracking-widest">Descrição</span>
-              <ChevronDown size={18} className={`transition-transform ${isDescOpen ? 'rotate-180' : ''}`} />
+              <span className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em] text-brand-text group-hover:text-brand-gold transition-colors">Descrição Técnica</span>
+              <ChevronDown size={18} className={`text-brand-gold transition-transform duration-500 ${isDescOpen ? 'rotate-180' : ''}`} />
             </button>
             <AnimatePresence>
               {isDescOpen && (
@@ -99,9 +113,9 @@ export default function ProductPage() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden"
+                  transition={{ duration: 0.4, ease: "circOut" }}
                 >
-                  <p className="pb-4 text-sm text-brand-text-muted leading-relaxed">
+                  <p className="px-6 pb-6 text-sm font-sans text-brand-text-muted leading-relaxed">
                     {product.description}
                   </p>
                 </motion.div>
@@ -110,16 +124,16 @@ export default function ProductPage() {
           </div>
 
           {product.measurements && (
-            <div className="border-t border-brand-border">
+            <div className="bg-brand-card/20 rounded-2xl border border-brand-border/30 overflow-hidden">
               <button 
                 onClick={() => setIsMeasuresOpen(!isMeasuresOpen)}
-                className="w-full py-4 flex items-center justify-between text-left"
+                className="w-full px-6 py-5 flex items-center justify-between text-left group"
               >
                 <div className="flex items-center gap-2">
-                  <Ruler size={16} className="text-brand-gold" />
-                  <span className="text-xs font-bold uppercase tracking-widest">Tabela de Medidas</span>
+                  <Ruler size={14} className="text-brand-gold" />
+                  <span className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em] text-brand-text group-hover:text-brand-gold transition-colors">Guia de Fit</span>
                 </div>
-                <ChevronDown size={18} className={`transition-transform ${isMeasuresOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={18} className={`text-brand-gold transition-transform duration-500 ${isMeasuresOpen ? 'rotate-180' : ''}`} />
               </button>
               <AnimatePresence>
                 {isMeasuresOpen && (
@@ -127,9 +141,9 @@ export default function ProductPage() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
+                    transition={{ duration: 0.4, ease: "circOut" }}
                   >
-                    <div className="pb-4 p-4 bg-brand-card rounded-lg border border-brand-border text-sm text-brand-text-muted font-mono">
+                    <div className="mx-6 mb-6 p-5 bg-black/40 rounded-xl border border-brand-border/30 text-xs font-sans text-brand-text-muted leading-loose whitespace-pre-line">
                       {product.measurements}
                     </div>
                   </motion.div>
@@ -139,11 +153,14 @@ export default function ProductPage() {
           )}
         </div>
 
-        {/* Related Products */}
+        {/* Sophisticated Related Section */}
         {relatedProducts.length > 0 && (
-          <div className="pt-12 space-y-6">
-            <h2 className="text-xl font-serif font-bold text-brand-gold">Você também pode gostar</h2>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="pt-20 space-y-8 pb-32">
+            <div className="flex flex-col gap-1 items-center mb-10">
+              <span className="text-[9px] font-sans font-extrabold uppercase tracking-[0.4em] text-brand-gold-light">Complementos</span>
+              <h2 className="text-3xl font-serif italic text-brand-text">Complete seu look</h2>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-10">
               {relatedProducts.map(p => (
                 <ProductCard key={p.id} product={p} />
               ))}

@@ -37,7 +37,7 @@ export const HeroBanner = () => {
   const slide = slides[active];
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-gold/25">
+    <section className="relative overflow-hidden rounded-3xl border border-border">
       <AnimatePresence mode="wait">
         <motion.div
           key={slide.title}
@@ -48,11 +48,11 @@ export const HeroBanner = () => {
           className="relative h-72"
         >
           <img src={slide.image} alt={slide.title} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-background/20 p-5" />
-          <div className="absolute inset-0 flex flex-col justify-end gap-3 p-5">
-            <h1 className="max-w-[16ch] text-4xl leading-[0.95] text-gold-light">{slide.title}</h1>
-            <p className="text-sm text-foreground/90">{slide.subtitle}</p>
-            <Button asChild className="w-fit rounded-full bg-gold text-primary-foreground hover:bg-gold-light">
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20 p-6" />
+          <div className="absolute inset-0 flex flex-col justify-end gap-3 p-6">
+            <h1 className="max-w-[16ch] text-4xl leading-[0.95] text-foreground">{slide.title}</h1>
+            <p className="max-w-[32ch] text-sm text-foreground/85">{slide.subtitle}</p>
+            <Button asChild className="w-fit rounded-full bg-primary text-primary-foreground hover:bg-accent">
               <Link to={slide.href}>Ver Coleção →</Link>
             </Button>
           </div>

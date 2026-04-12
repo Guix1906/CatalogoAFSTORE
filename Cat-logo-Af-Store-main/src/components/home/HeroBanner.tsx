@@ -114,13 +114,13 @@ export default function HeroBanner() {
               >
                 {activeSlide.title.includes(' — ') ? (
                   <>
-                    <span className="font-serif italic font-normal">{activeSlide.title.split(' — ')[0]}</span>
-                    <span className="block text-2xl md:text-3xl font-sans font-extrabold uppercase tracking-[0.2em] mt-2 text-brand-gold-light">
+                    <span className="font-serif font-black">{activeSlide.title.split(' — ')[0]}</span>
+                    <span className="block text-2xl md:text-3xl font-sans font-black uppercase tracking-[0.2em] mt-2 text-brand-gold">
                       {activeSlide.title.split(' — ')[1]}
                     </span>
                   </>
                 ) : (
-                  <span className="font-serif font-bold italic">{activeSlide.title}</span>
+                  <span className="font-serif font-black">{activeSlide.title}</span>
                 )}
               </motion.h2>
               <motion.p 

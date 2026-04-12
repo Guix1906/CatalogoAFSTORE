@@ -70,7 +70,7 @@ export default function ProductPage() {
             {product.isBestSeller && <Badge variant="gold">Performance Pick</Badge>}
             {product.isNew && <Badge variant="gold">Lançamento</Badge>}
           </div>
-          <h1 className="text-4xl font-serif italic text-brand-text leading-[1.1]">
+          <h1 className="text-4xl font-serif font-black text-brand-text leading-[1.1] uppercase tracking-tight">
             {product.name}
           </h1>
           <PriceDisplay 
@@ -158,7 +158,7 @@ export default function ProductPage() {
           <div className="pt-20 space-y-8 pb-32">
             <div className="flex flex-col gap-1 items-center mb-10">
               <span className="text-[9px] font-sans font-extrabold uppercase tracking-[0.4em] text-brand-gold-light">Complementos</span>
-              <h2 className="text-3xl font-serif italic text-brand-text">Complete seu look</h2>
+              <h2 className="text-3xl font-serif font-bold text-brand-text uppercase tracking-tight">Complete seu look</h2>
             </div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-10">
               {relatedProducts.map(p => (

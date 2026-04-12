@@ -54,7 +54,7 @@ export default function CategoryPage() {
             >
               <ChevronLeft size={20} />
             </button>
-            <h2 className="text-3xl font-serif italic text-brand-gold">
+            <h2 className="text-3xl font-serif font-bold text-brand-gold uppercase tracking-tight">
               {category?.name || (slug === 'ofertas' ? 'Ofertas' : 'Shop')}
             </h2>
           </div>

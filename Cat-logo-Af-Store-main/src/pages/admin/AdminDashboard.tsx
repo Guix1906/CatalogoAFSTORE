@@ -46,8 +46,11 @@ export default function AdminDashboard() {
         setLoading(false);
       };
 
-      loadProtectedData();
-    }, [navigate]);
+      await loadData();
+    };
+
+    loadProtectedData();
+  }, [navigate]);
 
   const handleToggleProduct = async (product: Product) => {
     setActionError('');

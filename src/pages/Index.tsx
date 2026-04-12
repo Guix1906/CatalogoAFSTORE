@@ -1,16 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { products } from "@/data/products";
+import { PageWrapper } from "@/components/layout/PageWrapper";
+import { HeroBanner } from "@/components/home/HeroBanner";
+import { CategoryScroll } from "@/components/home/CategoryScroll";
+import { ProductSection } from "@/components/home/ProductSection";
+import { WhatsAppBanner } from "@/components/home/WhatsAppBanner";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
+  const bestSellers = products.filter((item) => item.isBestSeller).slice(0, 4);
+  const newItems = products.filter((item) => item.isNew).slice(0, 6);
+  const saleItems = products.filter((item) => item.isOnSale).slice(0, 4);
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
+    <PageWrapper>
+      <div className="space-y-7">
+        <HeroBanner />
+        <CategoryScroll />
+        <ProductSection title="Mais Vendidos" products={bestSellers} />
+        <ProductSection title="Novidades" products={newItems} horizontal />
+        <section className="space-y-3 rounded-2xl border border-gold/30 bg-card p-3">
+          <div>
+            <h2 className="text-2xl text-gold">Promoções</h2>
+            <p className="text-xs text-muted-foreground">Seleção limitada com descontos exclusivos</p>
+          </div>
+          <ProductSection title="" products={saleItems} />
+        </section>
+        <WhatsAppBanner />
+      </div>
+    </PageWrapper>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;

@@ -110,24 +110,24 @@ export default function HeroBanner() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-4xl md:text-6xl text-brand-text mb-2 leading-tight"
+                className="font-banner-display text-4xl md:text-6xl text-brand-text mb-2 leading-tight normal-case"
               >
                 {activeSlide.title.includes(' — ') ? (
                   <>
-                    <span className="font-serif font-black">{activeSlide.title.split(' — ')[0]}</span>
-                    <span className="block text-2xl md:text-3xl font-sans font-black uppercase tracking-[0.2em] mt-2 text-brand-gold">
+                    <span>{activeSlide.title.split(' — ')[0]}</span>
+                    <span className="font-banner-support block text-2xl md:text-3xl font-black uppercase tracking-[0.2em] mt-2 text-brand-gold">
                       {activeSlide.title.split(' — ')[1]}
                     </span>
                   </>
                 ) : (
-                  <span className="font-serif font-black">{activeSlide.title}</span>
+                  <span>{activeSlide.title}</span>
                 )}
               </motion.h2>
               <motion.p 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-brand-text-muted text-[10px] md:text-xs font-sans font-bold uppercase tracking-[0.2em] mb-8"
+                className="font-banner-support text-brand-text-muted text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-8"
               >
                  {activeSlide.subtitle}
               </motion.p>

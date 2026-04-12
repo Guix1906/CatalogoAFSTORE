@@ -83,6 +83,7 @@ export default function AdminDashboard() {
         whatsappNumber: normalized,
         whatsappMessage: config.whatsappMessage,
         heroImageUrl: config.heroImageUrl,
+        heroImageUrls: config.heroImageUrls,
       });
       await loadData();
       setActionError('');
@@ -98,39 +99,49 @@ export default function AdminDashboard() {
   const handleHeroImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!config) return;
 
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files ?? []);
+    if (!files.length) return;
 
-    if (!file.type.startsWith('image/')) {
-      setActionError('Arquivo inválido. Selecione uma imagem.');
-      event.target.value = '';
-      return;
-    }
-
-    if (file.size > 3 * 1024 * 1024) {
-      setActionError('A imagem deve ter no máximo 3MB.');
+    if (files.length > 4) {
+      setActionError('Selecione no máximo 4 imagens.');
       event.target.value = '';
       return;
     }
 
     try {
-      const heroImageUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result));
-        reader.onerror = () => reject(new Error('Falha ao ler a imagem.'));
-        reader.readAsDataURL(file);
-      });
+      const invalidFile = files.find((file) => !file.type.startsWith('image/'));
+      if (invalidFile) {
+        throw new Error('Arquivo inválido. Selecione apenas imagens.');
+      }
+
+      const oversizedFile = files.find((file) => file.size > 3 * 1024 * 1024);
+      if (oversizedFile) {
+        throw new Error('Cada imagem deve ter no máximo 3MB.');
+      }
+
+      const heroImageUrls = await Promise.all(
+        files.map(
+          (file) =>
+            new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(String(reader.result));
+              reader.onerror = () => reject(new Error('Falha ao ler uma das imagens.'));
+              reader.readAsDataURL(file);
+            })
+        )
+      );
 
       await configService.updateConfig({
         whatsappNumber: config.whatsappNumber,
         whatsappMessage: config.whatsappMessage,
-        heroImageUrl,
+        heroImageUrl: heroImageUrls[0],
+        heroImageUrls,
       });
 
       await loadData();
       setActionError('');
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Erro ao atualizar imagem do banner.');
+      setActionError(err instanceof Error ? err.message : 'Erro ao atualizar imagens do banner.');
     } finally {
       event.target.value = '';
     }
@@ -181,32 +192,36 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-2">
-              <span className="text-[10px] text-brand-text-muted uppercase tracking-widest">Imagem do Banner Inicial</span>
-              <div className="flex items-center justify-between gap-3">
-                <div className="w-28 h-16 rounded-lg overflow-hidden bg-brand-bg border border-brand-border">
-                  {config?.heroImageUrl ? (
-                    <img
-                      src={config.heroImageUrl}
-                      alt="Banner inicial"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[10px] text-brand-text-muted uppercase tracking-widest">
-                      Sem imagem
+              <span className="text-[10px] text-brand-text-muted uppercase tracking-widest">Imagens do Banner Inicial (até 4)</span>
+              <div className="space-y-3">
+                <div className="grid grid-cols-4 gap-2">
+                  {(config?.heroImageUrls?.length ? config.heroImageUrls : config?.heroImageUrl ? [config.heroImageUrl] : []).map((url, index) => (
+                    <div key={`${url}-${index}`} className="w-full h-16 rounded-lg overflow-hidden bg-brand-bg border border-brand-border">
+                      <img
+                        src={url}
+                        alt={`Banner ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  )}
+                  ))}
+                  {Array.from({ length: Math.max(0, 4 - (config?.heroImageUrls?.length ?? (config?.heroImageUrl ? 1 : 0)))}).map((_, index) => (
+                    <div key={`empty-${index}`} className="w-full h-16 rounded-lg border border-brand-border bg-brand-bg/40 flex items-center justify-center text-[10px] text-brand-text-muted uppercase tracking-widest">
+                      Vazio
+                    </div>
+                  ))}
                 </div>
 
                 <button
                   onClick={handleSelectHeroImage}
                   className="text-[10px] text-brand-gold font-bold uppercase tracking-widest"
                 >
-                  Adicionar Imagem
+                  Adicionar Imagens
                 </button>
                 <input
                   ref={heroImageInputRef}
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={handleHeroImageChange}
                   className="hidden"
                 />

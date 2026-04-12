@@ -25,16 +25,24 @@ const SLIDES = [
     subtitle: "Até 30% OFF selecionados",
     image: "https://picsum.photos/seed/fitness-hero3/1200/800",
     link: "/categoria/conjuntos"
+  },
+  {
+    id: 4,
+    title: "Leggings e Tops",
+    subtitle: "Conforto para treinar",
+    image: "https://picsum.photos/seed/fitness-hero4/1200/800",
+    link: "/categoria/leggings"
   }
 ];
 
 export default function HeroBanner() {
   const [current, setCurrent] = useState(0);
-  const [heroImageUrl, setHeroImageUrl] = useState<string | undefined>(undefined);
+  const [heroImageUrls, setHeroImageUrls] = useState<string[]>([]);
   const navigate = useNavigate();
-  const slides = heroImageUrl
-    ? [{ ...SLIDES[0], image: heroImageUrl }, ...SLIDES.slice(1)]
-    : SLIDES;
+  const slides = SLIDES.map((slide, index) => ({
+    ...slide,
+    image: heroImageUrls[index] ?? slide.image,
+  }));
 
   useEffect(() => {
     let active = true;
@@ -42,10 +50,15 @@ export default function HeroBanner() {
     configService
       .getConfig()
       .then((config) => {
-        if (active) setHeroImageUrl(config.heroImageUrl);
+        if (!active) return;
+        if (config.heroImageUrls?.length) {
+          setHeroImageUrls(config.heroImageUrls.slice(0, 4));
+          return;
+        }
+        setHeroImageUrls(config.heroImageUrl ? [config.heroImageUrl] : []);
       })
       .catch(() => {
-        if (active) setHeroImageUrl(undefined);
+        if (active) setHeroImageUrls([]);
       });
 
     return () => {

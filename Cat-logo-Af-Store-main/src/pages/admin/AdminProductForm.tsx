@@ -31,8 +31,8 @@ export default function AdminProductForm() {
 
   useEffect(() => {
     const loadProduct = async () => {
-      const { isAuthenticated } = await adminAuthService.isAuthenticated();
-      if (!isAuthenticated) {
+      const { isAdmin } = await adminAuthService.isAdmin();
+      if (!isAdmin) {
         navigate('/admin');
         return;
       }
@@ -73,7 +73,12 @@ export default function AdminProductForm() {
       }
       navigate('/admin/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar produto.');
+      const message = err instanceof Error ? err.message : 'Erro ao salvar produto.';
+      if (message.toLowerCase().includes('row-level security')) {
+        setError('Seu usuário não tem permissão de admin para salvar produtos.');
+      } else {
+        setError(message);
+      }
     } finally {
       setSaving(false);
     }

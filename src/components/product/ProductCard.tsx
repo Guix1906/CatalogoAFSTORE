@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Product } from "@/types/product";
-import { ProductBadge } from "@/components/ui/Badge";
+import { ProductBadge } from "@/components/ui/product-badge";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 
 export const ProductCard = ({ product, index = 0 }: { product: Product; index?: number }) => (

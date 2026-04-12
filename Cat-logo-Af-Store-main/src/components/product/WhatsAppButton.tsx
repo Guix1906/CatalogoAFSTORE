@@ -38,7 +38,7 @@ export default function WhatsAppButton({ product, selectedSize, selectedColor }:
         onClick={(e) => { if (!url) e.preventDefault(); }}
         animate={{ scale: [1, 1.02, 1] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className={`w-full bg-brand-whatsapp text-white py-4 rounded-full flex items-center justify-center gap-3 font-bold uppercase text-xs tracking-widest shadow-xl shadow-brand-whatsapp/20 hover:opacity-90 transition-opacity ${!url ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`w-full bg-brand-whatsapp text-white py-4 rounded-full flex items-center justify-center gap-3 font-medium uppercase text-xs tracking-widest shadow-xl shadow-brand-whatsapp/20 hover:opacity-90 transition-opacity ${!url ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <MessageCircle size={20} fill="currentColor" fillOpacity={0.2} />
         Pedir pelo WhatsApp

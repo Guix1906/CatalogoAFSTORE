@@ -1,0 +1,9 @@
+{
+  "name": "workspace-runner",
+  "private": true,
+  "scripts": {
+    "dev": "cd Cat-logo-Af-Store-main && npm run dev",
+    "build": "cd Cat-logo-Af-Store-main && npm run build",
+    "preview": "cd Cat-logo-Af-Store-main && npm run preview"
+  }
+}

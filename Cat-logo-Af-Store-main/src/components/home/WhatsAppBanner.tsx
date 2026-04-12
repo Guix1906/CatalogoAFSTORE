@@ -10,10 +10,9 @@ export default function WhatsAppBanner() {
 
   return (
     <section className="px-4 py-8">
-      <motion.a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
+      <motion.button
+        type="button"
+        onClick={handleWhatsApp}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         className="w-full bg-brand-card border border-brand-border p-6 rounded-2xl flex items-center justify-between gap-4 group hover:border-brand-whatsapp transition-colors cursor-pointer block"
@@ -25,7 +24,7 @@ export default function WhatsAppBanner() {
         <div className="bg-brand-whatsapp p-3 rounded-full text-white shadow-lg shadow-brand-whatsapp/20 group-hover:scale-110 transition-transform">
           <MessageCircle size={24} fill="currentColor" fillOpacity={0.2} />
         </div>
-      </motion.a>
+      </motion.button>
     </section>
   );
 }

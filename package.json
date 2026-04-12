@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "cd Cat-logo-Af-Store-main && ../node_modules/.bin/vite --host 0.0.0.0",
     "build:dev": "cd Cat-logo-Af-Store-main && ../node_modules/.bin/vite build",
+    "dist-check": "npm run build:dev",
     "build": "cd Cat-logo-Af-Store-main && ../node_modules/.bin/vite build",
     "preview": "cd Cat-logo-Af-Store-main && ../node_modules/.bin/vite preview --host 0.0.0.0"
   },

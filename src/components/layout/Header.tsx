@@ -1,6 +1,6 @@
 import { Menu, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -27,13 +27,14 @@ export const Header = () => {
             </SheetHeader>
             <nav className="flex flex-col p-3">
               {menuItems.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  className="rounded-xl px-3 py-3 text-sm text-foreground transition-colors hover:bg-secondary hover:text-gold"
-                >
-                  {item.label}
-                </Link>
+                <SheetClose asChild key={item.label}>
+                  <Link
+                    to={item.to}
+                    className="rounded-xl px-3 py-3 text-sm text-foreground transition-colors hover:bg-secondary hover:text-gold"
+                  >
+                    {item.label}
+                  </Link>
+                </SheetClose>
               ))}
             </nav>
           </SheetContent>

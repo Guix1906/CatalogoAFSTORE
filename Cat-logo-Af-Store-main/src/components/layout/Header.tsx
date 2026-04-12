@@ -1,5 +1,6 @@
 import { Search, Menu } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import storeLogo from '@/assets/logo-af-store.jpeg';
 
 interface HeaderProps {
   onMenuOpen: () => void;
@@ -19,13 +20,12 @@ export default function Header({ onMenuOpen }: HeaderProps) {
           <Menu size={24} />
         </button>
         
-        <Link to="/" className="flex flex-col items-center">
-          <h1 className="text-2xl font-serif font-bold tracking-tighter text-brand-gold leading-none">
-            AF STORE
-          </h1>
-          <span className="text-[8px] uppercase tracking-[0.4em] text-brand-text-muted -mt-0.5">
-            Fitness com estilo
-          </span>
+        <Link to="/" className="flex items-center" aria-label="Ir para página inicial">
+          <img
+            src={storeLogo}
+            alt="Logo da loja AF Store"
+            className="h-10 w-auto object-contain"
+          />
         </Link>
 
         <button 

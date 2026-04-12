@@ -2,6 +2,11 @@ import { AppConfig } from '../types';
 import { supabase } from '../integrations/supabase/client';
 
 export const configService = {
+  normalizeWhatsAppNumber(number: string): string {
+    const digitsOnly = String(number || '').replace(/\D/g, '');
+    return digitsOnly.startsWith('00') ? digitsOnly.slice(2) : digitsOnly;
+  },
+
   async getConfig(): Promise<AppConfig> {
     const { data, error } = await supabase
       .from('app_config')
@@ -73,6 +78,19 @@ export const configService = {
   async getWhatsAppUrl(customMessage?: string): Promise<string> {
     const config = await this.getConfig();
     const message = encodeURIComponent(customMessage || config.whatsappMessage);
-    return `https://wa.me/${config.whatsappNumber}?text=${message}`;
+    const phone = this.normalizeWhatsAppNumber(config.whatsappNumber);
+    return `https://wa.me/${phone}?text=${message}`;
+  },
+
+  async openWhatsApp(customMessage?: string): Promise<void> {
+    const popup = window.open('', '_blank', 'noopener,noreferrer');
+    const url = await this.getWhatsAppUrl(customMessage);
+
+    if (popup) {
+      popup.location.href = url;
+      return;
+    }
+
+    window.location.href = url;
   }
 };

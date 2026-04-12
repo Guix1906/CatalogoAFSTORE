@@ -1,4 +1,4 @@
-import { Search, Menu } from 'lucide-react';
+import { Search, Menu, Shield } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import storeLogo from '../../assets/logo-af-store.jpeg';
 
@@ -28,13 +28,24 @@ export default function Header({ onMenuOpen }: HeaderProps) {
           />
         </Link>
 
-        <button 
-          onClick={() => navigate('/busca')}
-          className="p-2 -mr-2 hover:bg-brand-card rounded-full transition-colors text-brand-text"
-          aria-label="Buscar"
-        >
-          <Search size={22} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => navigate('/admin')}
+            className="p-2 hover:bg-brand-card rounded-full transition-colors text-brand-text"
+            aria-label="Acessar área administrativa"
+            title="Admin"
+          >
+            <Shield size={20} />
+          </button>
+
+          <button 
+            onClick={() => navigate('/busca')}
+            className="p-2 -mr-2 hover:bg-brand-card rounded-full transition-colors text-brand-text"
+            aria-label="Buscar"
+          >
+            <Search size={22} />
+          </button>
+        </div>
       </div>
     </header>
   );

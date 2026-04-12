@@ -27,8 +27,8 @@ export default function AdminProductForm() {
 
   useEffect(() => {
     const loadProduct = async () => {
-      const { isAdmin } = await adminAuthService.isAdminUser();
-      if (!isAdmin) {
+      const { isAuthenticated } = await adminAuthService.isAuthenticated();
+      if (!isAuthenticated) {
         navigate('/admin');
         return;
       }

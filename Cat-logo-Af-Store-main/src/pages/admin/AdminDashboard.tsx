@@ -17,8 +17,8 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const loadData = async () => {
-      const { isAdmin, error } = await adminAuthService.isAdminUser();
-      if (!isAdmin) {
+      const { isAuthenticated, error } = await adminAuthService.isAuthenticated();
+      if (!isAuthenticated) {
         setAuthError(error || 'Acesso negado.');
         setLoading(false);
         navigate('/admin');

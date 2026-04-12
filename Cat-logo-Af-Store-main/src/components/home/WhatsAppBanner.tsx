@@ -1,22 +1,25 @@
+import { useEffect, useState } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { configService } from '../../services/configService';
 
 export default function WhatsAppBanner() {
-  const handleWhatsApp = async () => {
-    const url = await configService.getWhatsAppUrl();
-    window.open(url, '_blank');
-  };
+  const [url, setUrl] = useState('');
+
+  useEffect(() => {
+    configService.getWhatsAppUrl().then(setUrl);
+  }, []);
 
   return (
     <section className="px-4 py-8">
       <motion.a
-        href={url}
+        href={url || '#'}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={(e) => { if (!url) e.preventDefault(); }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="w-full bg-brand-card border border-brand-border p-6 rounded-2xl flex items-center justify-between gap-4 group hover:border-brand-whatsapp transition-colors cursor-pointer block"
+        className={`w-full bg-brand-card border border-brand-border p-6 rounded-2xl flex items-center justify-between gap-4 group hover:border-brand-whatsapp transition-colors cursor-pointer block ${!url ? 'opacity-50' : ''}`}
       >
         <div className="text-left space-y-1">
           <h3 className="text-lg font-serif font-bold text-brand-text">Dúvidas?</h3>

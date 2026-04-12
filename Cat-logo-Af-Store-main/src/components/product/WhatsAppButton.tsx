@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Product } from '../../types';
@@ -10,27 +11,34 @@ interface WhatsAppButtonProps {
 }
 
 export default function WhatsAppButton({ product, selectedSize, selectedColor }: WhatsAppButtonProps) {
-  const handleWhatsApp = async () => {
-    const customMessage =
-      `Olá! Vim pelo catálogo da AF STORE\n` +
-      `Produto: ${product.name}\n` +
-      `Tamanho: ${selectedSize || 'A definir'}\n` +
-      `Cor: ${selectedColor || 'A definir'}\n\n` +
-      `Pode me ajudar com mais informações?`;
+  const [url, setUrl] = useState('');
 
-    const url = await configService.getWhatsAppUrl(customMessage);
-    window.open(url, '_blank');
-  };
+  useEffect(() => {
+    const updateUrl = async () => {
+      const customMessage =
+        `Olá! Vim pelo catálogo da AF STORE\n` +
+        `Produto: ${product.name}\n` +
+        `Tamanho: ${selectedSize || 'A definir'}\n` +
+        `Cor: ${selectedColor || 'A definir'}\n\n` +
+        `Pode me ajudar com mais informações?`;
+
+      const generatedUrl = await configService.getWhatsAppUrl(customMessage);
+      setUrl(generatedUrl);
+    };
+
+    updateUrl();
+  }, [product, selectedSize, selectedColor]);
 
   return (
     <div className="fixed bottom-20 left-0 right-0 z-40 px-4 pb-safe">
       <motion.a
-        href={url}
+        href={url || '#'}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={(e) => { if (!url) e.preventDefault(); }}
         animate={{ scale: [1, 1.02, 1] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="w-full bg-brand-whatsapp text-white py-4 rounded-full flex items-center justify-center gap-3 font-bold uppercase text-xs tracking-widest shadow-xl shadow-brand-whatsapp/20 hover:opacity-90 transition-opacity"
+        className={`w-full bg-brand-whatsapp text-white py-4 rounded-full flex items-center justify-center gap-3 font-bold uppercase text-xs tracking-widest shadow-xl shadow-brand-whatsapp/20 hover:opacity-90 transition-opacity ${!url ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <MessageCircle size={20} fill="currentColor" fillOpacity={0.2} />
         Pedir pelo WhatsApp

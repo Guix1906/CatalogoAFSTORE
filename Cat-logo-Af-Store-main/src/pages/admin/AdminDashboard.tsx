@@ -36,18 +36,12 @@ export default function AdminDashboard() {
         return;
       }
 
-      const loadData = async () => {
-        const [p, c] = await Promise.all([
-          productService.getProducts(),
-          configService.getConfig()
-        ]);
-        setProducts(p);
-        setConfig(c);
-        setLoading(false);
-      };
+      await loadData();
+      setLoading(false);
+    };
 
-      loadProtectedData();
-    }, [navigate]);
+    loadProtectedData();
+  }, [navigate]);
 
   const handleToggleProduct = async (product: Product) => {
     setActionError('');

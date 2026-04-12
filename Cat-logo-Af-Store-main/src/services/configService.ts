@@ -79,18 +79,19 @@ export const configService = {
     const config = await this.getConfig();
     const message = encodeURIComponent(customMessage || config.whatsappMessage);
     const phone = this.normalizeWhatsAppNumber(config.whatsappNumber);
-    return `https://wa.me/${phone}?text=${message}`;
+    return `https://api.whatsapp.com/send?phone=${phone}&text=${message}`;
   },
 
   async openWhatsApp(customMessage?: string): Promise<void> {
-    const popup = window.open('', '_blank', 'noopener,noreferrer');
+    const popup = window.open('about:blank', '_blank');
     const url = await this.getWhatsAppUrl(customMessage);
 
     if (popup) {
-      popup.location.href = url;
+      popup.opener = null;
+      popup.location.replace(url);
       return;
     }
 
-    window.location.href = url;
+    window.open(url, '_blank');
   }
 };

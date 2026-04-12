@@ -7,7 +7,7 @@ import { ProductGallery } from "@/components/product/ProductGallery";
 import { SizeSelector } from "@/components/product/SizeSelector";
 import { ColorSelector } from "@/components/product/ColorSelector";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
-import { ProductBadge } from "@/components/ui/Badge";
+import { ProductBadge } from "@/components/ui/product-badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ProductCard } from "@/components/product/ProductCard";
 import { WhatsAppButton } from "@/components/product/WhatsAppButton";

@@ -12,6 +12,8 @@ export default function AdminProductForm() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
     category: 'leggings',
@@ -85,20 +87,43 @@ export default function AdminProductForm() {
   };
 
   const handleAddImage = () => {
-    const url = window.prompt('Cole a URL da imagem:');
-    if (!url) return;
+    fileInputRef.current?.click();
+  };
 
-    const trimmed = url.trim();
-    if (!trimmed.startsWith('http')) {
-      setError('A imagem precisa ser uma URL válida começando com http/https.');
+  const fileToDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error('Não foi possível carregar a imagem.'));
+      reader.readAsDataURL(file);
+    });
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const invalidFile = files.find((file) => !file.type.startsWith('image/'));
+    if (invalidFile) {
+      setError('Selecione apenas arquivos de imagem.');
+      e.target.value = '';
       return;
     }
 
     setError('');
-    setFormData((prev) => ({
-      ...prev,
-      images: [...(prev.images || []), trimmed],
-    }));
+    setIsUploadingImage(true);
+
+    try {
+      const dataUrls = await Promise.all(files.map((file) => fileToDataUrl(file)));
+      setFormData((prev) => ({
+        ...prev,
+        images: [...(prev.images || []), ...dataUrls],
+      }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao carregar imagem.');
+    } finally {
+      setIsUploadingImage(false);
+      e.target.value = '';
+    }
   };
 
   if (loading) return null;
@@ -160,7 +185,15 @@ export default function AdminProductForm() {
 
         {/* Images */}
         <div className="space-y-4">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted">Imagens (URLs)</label>
+          <label className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted">Imagens</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageFileChange}
+            className="hidden"
+          />
           <div className="grid grid-cols-3 gap-3">
             {formData.images?.map((img, idx) => (
               <div key={idx} className="aspect-square bg-brand-card border border-brand-border rounded-lg relative overflow-hidden">
@@ -178,10 +211,13 @@ export default function AdminProductForm() {
             <button
               type="button"
               onClick={handleAddImage}
+              disabled={isUploadingImage}
               className="aspect-square bg-brand-card border border-brand-border border-dashed rounded-lg flex flex-col items-center justify-center text-brand-text-muted hover:text-brand-gold transition-colors"
             >
               <Plus size={20} />
-              <span className="text-[8px] font-bold uppercase mt-1">Add URL</span>
+              <span className="text-[8px] font-bold uppercase mt-1">
+                {isUploadingImage ? 'Carregando...' : 'Adicionar Imagem'}
+              </span>
             </button>
           </div>
         </div>

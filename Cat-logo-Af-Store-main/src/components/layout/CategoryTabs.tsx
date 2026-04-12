@@ -17,7 +17,7 @@ export default function CategoryTabs() {
             to={tab.slug === '' ? '/' : `/categoria/${tab.slug}`}
             end={tab.slug === ''}
             className={({ isActive }) => `
-              px-6 py-2 rounded-full text-[10px] font-sans font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border
+              px-6 py-2 rounded-full text-[10px] font-sans font-medium uppercase tracking-[0.2em] transition-all whitespace-nowrap border
               ${isActive 
                 ? 'bg-brand-gold border-brand-gold text-black shadow-lg shadow-brand-gold/20 scale-105' 
                 : 'bg-brand-card/50 border-brand-border/50 text-brand-text-muted hover:border-brand-gold/30'}

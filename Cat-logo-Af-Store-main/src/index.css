@@ -16,13 +16,30 @@
 }
 
 @layer base {
+  html {
+    font-size: 16.5px;
+  }
+
   body {
     @apply bg-brand-bg text-brand-text font-sans antialiased;
     font-feature-settings: "ss01" 1, "cv01" 1;
+    line-height: 1.5;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
+  }
+
+  p,
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  li,
+  label,
+  span {
+    @apply font-sans;
   }
 }
 

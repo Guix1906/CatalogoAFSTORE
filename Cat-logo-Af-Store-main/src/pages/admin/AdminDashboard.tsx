@@ -13,10 +13,20 @@ export default function AdminDashboard() {
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState('');
+  const [actionError, setActionError] = useState('');
   const navigate = useNavigate();
 
+  const loadData = async () => {
+    const [p, c] = await Promise.all([
+      productService.getProducts(),
+      configService.getConfig(),
+    ]);
+    setProducts(p);
+    setConfig(c);
+  };
+
   useEffect(() => {
-    const loadData = async () => {
+    const loadProtectedData = async () => {
       const { isAuthenticated, error } = await adminAuthService.isAuthenticated();
       if (!isAuthenticated) {
         setAuthError(error || 'Acesso negado.');
@@ -25,16 +35,59 @@ export default function AdminDashboard() {
         return;
       }
 
-      const [p, c] = await Promise.all([
-        productService.getProducts(),
-        configService.getConfig()
-      ]);
-      setProducts(p);
-      setConfig(c);
+      await loadData();
       setLoading(false);
     };
-    loadData();
+
+    loadProtectedData();
   }, [navigate]);
+
+  const handleToggleProduct = async (product: Product) => {
+    setActionError('');
+    try {
+      await productService.toggleProductActive(product.id, !product.active);
+      await loadData();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Erro ao atualizar status do produto.');
+    }
+  };
+
+  const handleDeleteProduct = async (product: Product) => {
+    const confirmed = window.confirm(`Deseja excluir o produto "${product.name}"?`);
+    if (!confirmed) return;
+
+    setActionError('');
+    try {
+      await productService.deleteProduct(product.id);
+      await loadData();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Erro ao excluir produto.');
+    }
+  };
+
+  const handleEditWhatsApp = async () => {
+    if (!config) return;
+
+    const whatsappNumber = window.prompt('Informe o WhatsApp de vendas (somente números com DDI):', config.whatsappNumber);
+    if (!whatsappNumber) return;
+
+    const normalized = whatsappNumber.trim();
+    if (!/^\d{10,15}$/.test(normalized)) {
+      setActionError('Número inválido. Use somente números, entre 10 e 15 dígitos.');
+      return;
+    }
+
+    try {
+      await configService.updateConfig({
+        whatsappNumber: normalized,
+        whatsappMessage: config.whatsappMessage,
+      });
+      await loadData();
+      setActionError('');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Erro ao atualizar WhatsApp.');
+    }
+  };
 
   const handleLogout = async () => {
     await adminAuthService.signOut();
@@ -71,11 +124,18 @@ export default function AdminDashboard() {
               <span className="text-[10px] text-brand-text-muted uppercase tracking-widest">WhatsApp de Vendas</span>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">{config?.whatsappNumber}</span>
-                <button className="text-[10px] text-brand-gold font-bold uppercase tracking-widest">Editar</button>
+                <button
+                  onClick={handleEditWhatsApp}
+                  className="text-[10px] text-brand-gold font-bold uppercase tracking-widest"
+                >
+                  Editar
+                </button>
               </div>
             </div>
           </div>
         </section>
+
+        {actionError && <p className="text-xs text-red-500 font-semibold">{actionError}</p>}
 
         {/* Products Section */}
         <section className="space-y-6">
@@ -120,6 +180,7 @@ export default function AdminDashboard() {
 
                   <div className="flex items-center justify-end gap-3">
                     <button 
+                      onClick={() => handleToggleProduct(product)}
                       className={`p-2 rounded-full transition-colors ${product.active ? 'text-brand-whatsapp hover:bg-brand-whatsapp/10' : 'text-brand-text-muted hover:bg-brand-text-muted/10'}`}
                       title={product.active ? 'Desativar' : 'Ativar'}
                     >
@@ -133,6 +194,7 @@ export default function AdminDashboard() {
                       <Edit2 size={16} />
                     </button>
                     <button 
+                      onClick={() => handleDeleteProduct(product)}
                       className="p-2 text-brand-text-muted hover:text-red-500 transition-colors"
                       title="Excluir"
                     >
@@ -149,6 +211,12 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
+
+            {products.length === 0 && (
+              <div className="bg-brand-card border border-brand-border rounded-2xl p-6 text-center">
+                <p className="text-sm text-brand-text-muted">Nenhum produto no banco ainda.</p>
+              </div>
+            )}
           </div>
         </section>
       </div>

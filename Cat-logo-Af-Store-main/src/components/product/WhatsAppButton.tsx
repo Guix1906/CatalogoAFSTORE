@@ -18,8 +18,7 @@ export default function WhatsAppButton({ product, selectedSize, selectedColor }:
       `Cor: ${selectedColor || 'A definir'}\n\n` +
       `Pode me ajudar com mais informações?`;
     
-    const popup = window.open('about:blank', '_blank');
-    await configService.openWhatsApp(customMessage, popup);
+    await configService.openWhatsApp(customMessage);
   };
 
   return (

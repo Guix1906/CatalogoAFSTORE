@@ -4,12 +4,14 @@ import PageWrapper from '../../components/layout/PageWrapper';
 import { productService } from '../../services/productService';
 import { adminAuthService } from '../../services/adminAuthService';
 import { Product } from '../../types';
-import { ChevronLeft, Save, Image as ImageIcon, Plus, X } from 'lucide-react';
+import { ChevronLeft, Save, Plus, X } from 'lucide-react';
 
 export default function AdminProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
     category: 'leggings',
@@ -42,16 +44,60 @@ export default function AdminProductForm() {
     loadProduct();
   }, [id, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Funcionalidade de salvamento será integrada com Supabase na Etapa 2.');
-    navigate('/admin/dashboard');
+
+    const productName = formData.name?.trim();
+    const priceValue = Number(formData.price || 0);
+
+    if (!productName || productName.length < 3) {
+      setError('Informe um nome de produto com pelo menos 3 caracteres.');
+      return;
+    }
+
+    if (!priceValue || priceValue <= 0) {
+      setError('Informe um preço válido maior que zero.');
+      return;
+    }
+
+    setError('');
+    setSaving(true);
+
+    try {
+      if (id) {
+        await productService.updateProduct(id, formData);
+      } else {
+        await productService.createProduct(formData);
+      }
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao salvar produto.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleRemoveImage = (indexToRemove: number) => {
     setFormData((prev) => ({
       ...prev,
       images: (prev.images || []).filter((_, index) => index !== indexToRemove),
+    }));
+  };
+
+  const handleAddImage = () => {
+    const url = window.prompt('Cole a URL da imagem:');
+    if (!url) return;
+
+    const trimmed = url.trim();
+    if (!trimmed.startsWith('http')) {
+      setError('A imagem precisa ser uma URL válida começando com http/https.');
+      return;
+    }
+
+    setError('');
+    setFormData((prev) => ({
+      ...prev,
+      images: [...(prev.images || []), trimmed],
     }));
   };
 
@@ -66,7 +112,7 @@ export default function AdminProductForm() {
         <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-text-muted">
           {id ? 'Editar Produto' : 'Novo Produto'}
         </h2>
-        <button onClick={handleSubmit} className="p-2 text-brand-gold">
+        <button onClick={handleSubmit} className="p-2 text-brand-gold" disabled={saving}>
           <Save size={24} />
         </button>
       </div>
@@ -129,12 +175,20 @@ export default function AdminProductForm() {
                 </button>
               </div>
             ))}
-            <button className="aspect-square bg-brand-card border border-brand-border border-dashed rounded-lg flex flex-col items-center justify-center text-brand-text-muted hover:text-brand-gold transition-colors">
+            <button
+              type="button"
+              onClick={handleAddImage}
+              className="aspect-square bg-brand-card border border-brand-border border-dashed rounded-lg flex flex-col items-center justify-center text-brand-text-muted hover:text-brand-gold transition-colors"
+            >
               <Plus size={20} />
               <span className="text-[8px] font-bold uppercase mt-1">Add URL</span>
             </button>
           </div>
         </div>
+
+        {error && (
+          <p className="text-xs text-red-500 font-semibold">{error}</p>
+        )}
 
         {/* Description */}
         <div className="space-y-2">
@@ -171,9 +225,10 @@ export default function AdminProductForm() {
 
         <button
           type="submit"
+          disabled={saving}
           className="w-full bg-brand-gold text-brand-bg py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] shadow-xl shadow-brand-gold/20"
         >
-          Salvar Alterações
+          {saving ? 'Salvando...' : 'Salvar Alterações'}
         </button>
       </form>
     </PageWrapper>

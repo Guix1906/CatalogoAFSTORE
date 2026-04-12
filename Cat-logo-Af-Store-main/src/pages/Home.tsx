@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import PageWrapper from '../components/layout/PageWrapper';
 import HeroBanner from '../components/home/HeroBanner';
 import CategoryTabs from '../components/layout/CategoryTabs';
@@ -28,15 +27,6 @@ export default function Home() {
       <div className="pt-16"> {/* Spacer for fixed header */}
         <CategoryTabs />
         <HeroBanner />
-
-        <div className="px-4 pt-4">
-          <Link
-            to="/admin"
-            className="inline-flex items-center justify-center rounded-xl border border-brand-border bg-brand-card px-4 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-brand-text-muted transition-colors hover:border-brand-gold hover:text-brand-gold"
-          >
-            Acessar painel admin
-          </Link>
-        </div>
         
         {bestSellers.length > 0 && (
           <ProductSection 

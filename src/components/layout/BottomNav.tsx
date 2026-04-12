@@ -14,19 +14,28 @@ export const BottomNav = () => {
   const location = useLocation();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-gold/40 bg-background/95 backdrop-blur">
-      <div className="mx-auto grid h-16 max-w-md grid-cols-4 items-center px-2">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur-md">
+      <div className="mx-auto grid h-16 max-w-lg grid-cols-4 items-center px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
 
           return (
-            <Link key={item.label} to={item.to} className="flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground">
-              <motion.span animate={isActive ? { scale: 1.08 } : { scale: 1 }} className={cn("flex items-center justify-center", isActive && "text-gold")}
+            <Link
+              key={item.label}
+              to={item.to}
+              className="flex flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground"
+            >
+              <motion.span
+                animate={isActive ? { scale: 1.08 } : { scale: 1 }}
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-full transition-colors",
+                  isActive && "bg-secondary text-gold",
+                )}
               >
                 <Icon size={18} />
               </motion.span>
-              <span className={cn(isActive && "text-gold")}>{item.label}</span>
+              <span className={cn("transition-colors", isActive && "text-gold")}>{item.label}</span>
             </Link>
           );
         })}
@@ -35,7 +44,7 @@ export const BottomNav = () => {
           href={getDefaultWhatsAppUrl()}
           target="_blank"
           rel="noreferrer"
-          className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-whatsapp text-primary-foreground"
+          className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-whatsapp text-primary-foreground shadow-md shadow-whatsapp/30"
           aria-label="Falar no WhatsApp"
         >
           <MessageCircle size={20} />

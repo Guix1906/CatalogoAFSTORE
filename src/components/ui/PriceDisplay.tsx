@@ -8,8 +8,8 @@ interface PriceDisplayProps {
 
 export const PriceDisplay = ({ price, originalPrice, discount }: PriceDisplayProps) => (
   <div className="flex items-end gap-2">
-    <span className="text-lg font-bold text-gold">{formatBRL(price)}</span>
+    <span className="text-lg font-bold text-gold-light">{formatBRL(price)}</span>
     {originalPrice ? <span className="text-xs text-muted-foreground line-through">{formatBRL(originalPrice)}</span> : null}
-    {discount ? <span className="text-xs font-bold text-gold-light">-{discount}%</span> : null}
+    {discount ? <span className="text-xs font-bold text-gold">-{discount}%</span> : null}
   </div>
 );

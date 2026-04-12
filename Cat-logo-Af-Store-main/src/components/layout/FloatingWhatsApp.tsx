@@ -18,7 +18,18 @@ export default function FloatingWhatsApp() {
 
   const handleOpenWhatsApp = async () => {
     const popup = window.open('about:blank', '_blank', 'noopener,noreferrer');
-    await configService.openWhatsApp(undefined, popup);
+
+    try {
+      const whatsappUrl = await configService.getWhatsAppUrl();
+
+      if (popup) {
+        popup.location.href = whatsappUrl;
+      } else {
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      if (popup) popup.close();
+    }
   };
 
   return (

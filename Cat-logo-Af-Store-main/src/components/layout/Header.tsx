@@ -1,6 +1,6 @@
 import { Search, Menu } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import storeLogo from '@/assets/logo-af-store.jpeg';
+import storeLogo from '../../assets/logo-af-store.jpeg';
 
 interface HeaderProps {
   onMenuOpen: () => void;

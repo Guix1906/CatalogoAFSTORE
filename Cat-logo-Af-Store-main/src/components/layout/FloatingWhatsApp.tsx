@@ -17,7 +17,8 @@ export default function FloatingWhatsApp() {
   }, []);
 
   const handleOpenWhatsApp = async () => {
-    await configService.openWhatsApp();
+    const popup = window.open('about:blank', '_blank', 'noopener,noreferrer');
+    await configService.openWhatsApp(undefined, popup);
   };
 
   return (

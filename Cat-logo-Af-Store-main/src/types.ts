@@ -24,6 +24,7 @@ export interface AppConfig {
   whatsappNumber: string;
   whatsappMessage: string;
   heroImageUrl?: string;
+  heroImageUrls?: string[];
 }
 
 export interface Category {

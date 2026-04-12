@@ -160,8 +160,8 @@ export default function AdminDashboard() {
       <div className="p-6 space-y-8">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h1 className="text-2xl font-serif font-bold text-brand-gold">Painel Admin</h1>
-            <p className="text-[10px] text-brand-text-muted uppercase tracking-widest">Gestão da AF STORE</p>
+            <h1 className="text-3xl font-serif italic text-brand-gold">Painel Admin</h1>
+            <p className="text-[9px] font-sans font-extrabold text-brand-text-muted uppercase tracking-[0.2em]">Gestão da Antigravity</p>
           </div>
           <button
             onClick={handleLogout}
@@ -172,19 +172,19 @@ export default function AdminDashboard() {
         </div>
 
         {/* Config Section */}
-        <section className="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
+        <section className="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4 shadow-xl">
           <div className="flex items-center gap-2 text-brand-gold">
             <Settings size={18} />
-            <h2 className="text-xs font-bold uppercase tracking-widest">Configurações Gerais</h2>
+            <h2 className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em]">Configurações Gerais</h2>
           </div>
           <div className="grid gap-4">
             <div className="space-y-1">
-              <span className="text-[10px] text-brand-text-muted uppercase tracking-widest">WhatsApp de Vendas</span>
+              <span className="text-[9px] font-sans font-bold text-brand-text-muted uppercase tracking-[0.2em]">WhatsApp de Vendas</span>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">{config?.whatsappNumber}</span>
                 <button
                   onClick={handleEditWhatsApp}
-                  className="text-[10px] text-brand-gold font-bold uppercase tracking-widest"
+                  className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.1em]"
                 >
                   Editar
                 </button>
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-2">
-              <span className="text-[10px] text-brand-text-muted uppercase tracking-widest">Imagens do Banner Inicial (até 4)</span>
+              <span className="text-[9px] font-sans font-bold text-brand-text-muted uppercase tracking-[0.2em]">Imagens do Banner Inicial (até 4)</span>
               <div className="space-y-3">
                 <div className="grid grid-cols-4 gap-2">
                   {(config?.heroImageUrls?.length ? config.heroImageUrls : config?.heroImageUrl ? [config.heroImageUrl] : []).map((url, index) => (
@@ -213,7 +213,7 @@ export default function AdminDashboard() {
 
                 <button
                   onClick={handleSelectHeroImage}
-                  className="text-[10px] text-brand-gold font-bold uppercase tracking-widest"
+                  className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.1em]"
                 >
                   Adicionar Imagens
                 </button>
@@ -236,11 +236,11 @@ export default function AdminDashboard() {
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-brand-gold">
-              <h2 className="text-xs font-bold uppercase tracking-widest">Produtos ({products.length})</h2>
+              <h2 className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em]">Produtos ({products.length})</h2>
             </div>
             <button
               onClick={() => navigate('/admin/produto/novo')}
-              className="flex items-center gap-2 bg-brand-gold text-brand-bg px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest"
+              className="btn-primary flex items-center gap-2 !px-4 !py-2 !text-[9px]"
             >
               <Plus size={14} /> Novo Produto
             </button>

@@ -1,51 +1,49 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
 
-  --color-brand-bg: #0a0a0a;
+  --color-brand-bg: #121212;
+  --color-brand-graphite: #1a1a1a;
   --color-brand-gold: #C9A96E;
   --color-brand-gold-light: #E8C98A;
-  --color-brand-card: #161616;
+  --color-brand-card: #1c1c1c;
   --color-brand-border: #2a2a2a;
   --color-brand-text: #F0ECE4;
-  --color-brand-text-muted: #888888;
+  --color-brand-text-muted: #a0a0a0;
   --color-brand-whatsapp: #25D366;
 }
 
 @layer base {
-  *,
-  *::before,
-  *::after {
-    font-family: "Cormorant Garamond", ui-serif, Georgia, serif;
-  }
-
-  html {
-    font-size: 16.5px;
-  }
-
   body {
     @apply bg-brand-bg text-brand-text font-sans antialiased;
-    font-feature-settings: "ss01" 1, "cv01" 1;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2 {
     @apply font-serif;
   }
 
-  p,
-  a,
-  button,
-  input,
-  select,
-  textarea,
-  li,
-  label,
-  span {
-    @apply font-sans;
+  h3, h4, h5, h6 {
+    @apply font-sans font-bold uppercase tracking-wider;
+  }
+
+  button, 
+  .btn,
+  nav a {
+    @apply font-sans uppercase tracking-[0.1em] font-semibold;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-gold text-black px-6 py-3 rounded-full hover:bg-brand-gold-light transition-colors;
+  }
+  
+  .banner-title {
+    @apply font-serif italic text-4xl md:text-6xl;
   }
 }
 
@@ -54,7 +52,7 @@
   width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #121212;
 }
 ::-webkit-scrollbar-thumb {
   background: #2a2a2a;

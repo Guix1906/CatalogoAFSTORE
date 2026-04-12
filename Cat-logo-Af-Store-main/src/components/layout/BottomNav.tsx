@@ -36,7 +36,7 @@ export default function BottomNav() {
                 >
                   <item.icon size={20} />
                 </motion.div>
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[9px] font-sans font-bold uppercase tracking-[0.1em]">{item.label}</span>
               </>
             )}
           </NavLink>
@@ -56,7 +56,7 @@ export default function BottomNav() {
           >
             <MessageCircle size={20} fill="currentColor" fillOpacity={0.2} />
           </motion.div>
-          <span className="text-[10px] font-medium">WhatsApp</span>
+          <span className="text-[9px] font-sans font-bold uppercase tracking-[0.1em]">WhatsApp</span>
         </a>
       </div>
     </nav>

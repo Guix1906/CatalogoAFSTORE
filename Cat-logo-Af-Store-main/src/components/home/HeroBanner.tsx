@@ -7,29 +7,29 @@ import { configService } from '../../services/configService';
 const SLIDES = [
   {
     id: 1,
-    title: "Nova Coleção Feminina",
-    subtitle: "Performance e Elegância",
+    title: "Feminino — Elegance",
+    subtitle: "A união entre luxo e movimento",
     image: "https://picsum.photos/seed/fitness-hero1/1200/800",
     link: "/categoria/feminino"
   },
   {
     id: 2,
     title: "Masculino — Performance",
-    subtitle: "Estilo sem limites",
+    subtitle: "Estilo técnico para superar limites",
     image: "https://picsum.photos/seed/fitness-hero2/1200/800",
     link: "/categoria/masculino"
   },
   {
     id: 3,
-    title: "Conjuntos Premium",
-    subtitle: "Até 30% OFF selecionados",
+    title: "Conjuntos — Premium",
+    subtitle: "O caimento perfeito para o seu treino",
     image: "https://picsum.photos/seed/fitness-hero3/1200/800",
     link: "/categoria/conjuntos"
   },
   {
     id: 4,
-    title: "Leggings e Tops",
-    subtitle: "Conforto para treinar",
+    title: "Leggings — High-Tech",
+    subtitle: "Tecnologia têxtil de ponta",
     image: "https://picsum.photos/seed/fitness-hero4/1200/800",
     link: "/categoria/leggings"
   }
@@ -105,33 +105,43 @@ export default function HeroBanner() {
             referrerPolicy="no-referrer"
           />
           
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-16 px-6 text-center">
-            <motion.h2 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-3xl md:text-5xl font-serif font-bold text-brand-text mb-2"
-            >
-               {activeSlide.title}
-            </motion.h2>
-            <motion.p 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-brand-text-muted text-sm uppercase tracking-widest mb-6"
-            >
-               {activeSlide.subtitle}
-            </motion.p>
-            <motion.button
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-               onClick={() => navigate(activeSlide.link)}
-              className="flex items-center gap-2 bg-brand-gold text-brand-bg px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-brand-gold-light transition-colors"
-            >
-              Ver Coleção <ChevronRight size={16} />
-            </motion.button>
-          </div>
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-16 px-6 text-center">
+              <motion.h2 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-4xl md:text-6xl text-brand-text mb-2 leading-tight"
+              >
+                {activeSlide.title.includes(' — ') ? (
+                  <>
+                    <span className="font-serif italic font-normal">{activeSlide.title.split(' — ')[0]}</span>
+                    <span className="block text-2xl md:text-3xl font-sans font-extrabold uppercase tracking-[0.2em] mt-2 text-brand-gold-light">
+                      {activeSlide.title.split(' — ')[1]}
+                    </span>
+                  </>
+                ) : (
+                  <span className="font-serif font-bold italic">{activeSlide.title}</span>
+                )}
+              </motion.h2>
+              <motion.p 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="text-brand-text-muted text-[10px] md:text-xs font-sans font-bold uppercase tracking-[0.2em] mb-8"
+              >
+                 {activeSlide.subtitle}
+              </motion.p>
+              <motion.button
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                 onClick={() => navigate(activeSlide.link)}
+                className="btn-primary flex items-center justify-center gap-2 group"
+              >
+                Ver Coleção 
+                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </motion.button>
+            </div>
         </motion.div>
       </AnimatePresence>
 

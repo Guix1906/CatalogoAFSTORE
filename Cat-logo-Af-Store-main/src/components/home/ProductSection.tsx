@@ -14,10 +14,10 @@ export default function ProductSection({ title, products, viewAllLink, layout = 
   return (
     <section className="py-8 px-4 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-serif font-bold text-brand-gold tracking-tight">{title}</h2>
+        <h2 className="text-2xl font-serif italic text-brand-gold">{title}</h2>
         {viewAllLink && (
-          <Link to={viewAllLink} className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted flex items-center gap-1 hover:text-brand-gold transition-colors">
-            Ver tudo <ChevronRight size={14} />
+          <Link to={viewAllLink} className="text-[9px] font-sans font-extrabold uppercase tracking-[0.2em] text-brand-text-muted flex items-center gap-1 hover:text-brand-gold transition-colors">
+            Ver tudo <ChevronRight size={12} />
           </Link>
         )}
       </div>

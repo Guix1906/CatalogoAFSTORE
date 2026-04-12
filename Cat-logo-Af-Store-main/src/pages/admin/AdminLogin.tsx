@@ -2,22 +2,65 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageWrapper from '../../components/layout/PageWrapper';
 import { Lock } from 'lucide-react';
+import { supabase } from '../../integrations/supabase/client';
 
 export default function AdminLogin() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple password protection as requested
-    if (password === 'afstore123') {
-      localStorage.setItem('admin_auth', 'true');
-      navigate('/admin/dashboard');
-    } else {
-      setError('Senha incorreta');
+    setError('');
+    setLoading(true);
+
+    try {
+      if (isRegisterMode) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
+        });
+
+        if (signUpError) {
+          throw signUpError;
+        }
+
+        setError('Cadastro realizado. Verifique seu email para confirmar a conta e entrar.');
+      } else {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) {
+          throw signInError;
+        }
+
+        navigate('/admin/dashboard');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao autenticar');
+    } finally {
+      setLoading(false);
     }
   };
+
+  React.useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        navigate('/admin/dashboard');
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
 
   return (
     <PageWrapper>
@@ -31,17 +74,32 @@ export default function AdminLogin() {
             <p className="text-xs text-brand-text-muted uppercase tracking-widest">Painel Administrativo</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleAuth} className="space-y-6">
             <div className="space-y-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted">
-                Senha de Acesso
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-gold transition-colors"
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted">
+                Senha
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-gold transition-colors"
-                placeholder="Digite a senha"
+                placeholder="Digite sua senha"
+                minLength={6}
                 required
               />
               {error && <p className="text-xs text-red-500">{error}</p>}
@@ -49,9 +107,21 @@ export default function AdminLogin() {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-brand-gold text-brand-bg py-4 rounded-lg font-bold uppercase text-xs tracking-widest hover:bg-brand-gold-light transition-colors"
             >
-              Entrar no Painel
+              {loading ? 'Processando...' : isRegisterMode ? 'Cadastrar Admin' : 'Entrar no Painel'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsRegisterMode((prev) => !prev);
+                setError('');
+              }}
+              className="w-full text-[10px] font-bold uppercase tracking-widest text-brand-text-muted hover:text-brand-gold transition-colors"
+            >
+              {isRegisterMode ? 'Já tenho conta' : 'Criar nova conta'}
             </button>
           </form>
         </div>

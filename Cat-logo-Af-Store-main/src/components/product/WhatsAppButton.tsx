@@ -10,6 +10,19 @@ interface WhatsAppButtonProps {
 }
 
 export default function WhatsAppButton({ product, selectedSize, selectedColor }: WhatsAppButtonProps) {
+  const [url, setUrl] = useState('https://wa.me/');
+
+  useEffect(() => {
+    const customMessage =
+      `Olá! Vim pelo catálogo da AF STORE\n` +
+      `Produto: ${product.name}\n` +
+      `Tamanho: ${selectedSize || 'A definir'}\n` +
+      `Cor: ${selectedColor || 'A definir'}\n\n` +
+      `Pode me ajudar com mais informações?`;
+
+    setUrl(configService.getWhatsAppUrl(customMessage));
+  }, [product.name, selectedSize, selectedColor]);
+
   const handleWhatsApp = async () => {
     const customMessage =
       `Olá! Vim pelo catálogo da AF STORE\n` +
@@ -18,14 +31,17 @@ export default function WhatsAppButton({ product, selectedSize, selectedColor }:
       `Cor: ${selectedColor || 'A definir'}\n\n` +
       `Pode me ajudar com mais informações?`;
 
-    const url = await configService.getWhatsAppUrl(customMessage);
-    window.open(url, '_blank');
+    await configService.openWhatsApp(customMessage);
   };
 
   return (
     <div className="fixed bottom-20 left-0 right-0 z-40 px-4 pb-safe">
       <motion.a
         href={url}
+        onClick={(e) => {
+          e.preventDefault();
+          void handleWhatsApp();
+        }}
         target="_blank"
         rel="noopener noreferrer"
         animate={{ scale: [1, 1.02, 1] }}

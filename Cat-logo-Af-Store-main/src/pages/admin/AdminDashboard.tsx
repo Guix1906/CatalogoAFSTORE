@@ -154,7 +154,7 @@ export default function AdminDashboard() {
           </div>
           <button 
             onClick={handleLogout}
-            className="p-2 text-brand-text-muted hover:text-red-500 transition-colors"
+            className="p-2 text-brand-text-muted hover:text-brand-gold-light transition-colors"
           >
             <LogOut size={20} />
           </button>
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        {actionError && <p className="text-xs text-red-500 font-semibold">{actionError}</p>}
+        {actionError && <p className="text-xs text-brand-gold-light font-semibold">{actionError}</p>}
 
         {/* Products Section */}
         <section className="space-y-6">
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
                     </button>
                     <button 
                       onClick={() => handleDeleteProduct(product)}
-                      className="p-2 text-brand-text-muted hover:text-red-500 transition-colors"
+                      className="p-2 text-brand-text-muted hover:text-brand-gold-light transition-colors"
                       title="Excluir"
                     >
                       <Trash2 size={16} />

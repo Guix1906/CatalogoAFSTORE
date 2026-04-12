@@ -33,8 +33,17 @@ const toProduct = (row: ProductRow): Product => {
 };
 
 const sanitizePayload = (product: Partial<Product>) => ({
+  const baseName = (product.name || '').trim();
+  const slugFromName = baseName
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return {
   name: (product.name || '').trim(),
-  slug: (product.slug || '').trim(),
+  slug: (product.slug || slugFromName || `produto-${Date.now()}`).trim(),
   category: (product.category || 'leggings') as string,
   price: Number(product.price || 0),
   original_price: product.originalPrice ?? null,
@@ -50,7 +59,8 @@ const sanitizePayload = (product: Partial<Product>) => ({
   gender: product.gender || 'feminino',
   tags: (product.tags || []).filter(Boolean),
   description: product.description || '',
-});
+  };
+};
 
 export const productService = {
   async getProducts(): Promise<Product[]> {

@@ -16,7 +16,7 @@ export default function CategoryScroll() {
                 {category.icon}
               </div>
             )}
-            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted group-hover:text-brand-gold transition-colors">
+            <span className="text-[10px] font-medium uppercase tracking-widest text-brand-text-muted group-hover:text-brand-gold transition-colors">
               {category.name}
             </span>
           </Link>

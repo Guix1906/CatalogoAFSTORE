@@ -5,7 +5,7 @@ import { productService } from '../../services/productService';
 import { configService } from '../../services/configService';
 import { adminAuthService } from '../../services/adminAuthService';
 import { Product, AppConfig } from '../../types';
-import { Plus, Edit2, Trash2, Power, Settings, LogOut, ExternalLink } from 'lucide-react';
+import { Plus, Edit2, Trash2, Power, Settings, LogOut, ExternalLink, Package, MoreHorizontal } from 'lucide-react';
 import PriceDisplay from '../../components/ui/PriceDisplay';
 
 export default function AdminDashboard() {
@@ -179,181 +179,185 @@ export default function AdminDashboard() {
   if (authError) return null;
 
   return (
-    <PageWrapper>
-      <div className="px-6 pt-12 pb-24 space-y-10">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-serif italic text-brand-text">Painel Admin</h1>
-            <p className="text-[9px] font-sans font-extrabold text-brand-text-muted/60 uppercase tracking-[0.2em]">Gestão da Antigravity</p>
+    <div className="flex h-screen bg-[#0F0F0F] text-[#E5E5E5] overflow-hidden">
+      {/* Sidebar (Desktop) */}
+      <aside className="w-64 bg-[#121212] border-r border-white/5 hidden md:flex flex-col justify-between py-8 px-6">
+        <div>
+          <div className="mb-12">
+            <h1 className="text-xl font-serif italic text-white tracking-wide">Admin<span className="text-brand-gold">.</span></h1>
+            <p className="text-[9px] font-sans font-extrabold text-[#888] uppercase tracking-[0.2em] mt-1">Antigravity</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="p-3 bg-brand-card/50 rounded-full text-brand-text-muted hover:text-brand-gold hover:bg-brand-card transition-colors"
-            title="Sair do Modo Admin"
-          >
+          <nav className="space-y-2">
+            <button className="w-full flex items-center gap-3 px-4 py-3 bg-[#181818] border border-white/5 rounded-xl text-white font-medium text-sm transition-colors shadow-sm">
+              <Package size={18} className="text-brand-gold" />
+              Produtos
+            </button>
+            <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#181818] border border-transparent rounded-xl text-[#888] hover:text-white font-medium text-sm transition-colors">
+              <Settings size={18} />
+              Configurações
+            </button>
+          </nav>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-3 text-[#888] hover:text-white hover:bg-white/5 rounded-xl transition-colors text-sm font-medium w-full"
+        >
+          <LogOut size={18} />
+          Sair do Sistema
+        </button>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        {/* Mobile Header */}
+        <div className="md:hidden flex items-center justify-between px-6 py-5 bg-[#121212] border-b border-white/5">
+          <div className="space-y-0.5">
+            <h1 className="text-lg font-serif italic text-white">Admin<span className="text-brand-gold">.</span></h1>
+          </div>
+          <button onClick={handleLogout} className="p-2 text-[#888] hover:text-white">
             <LogOut size={18} />
           </button>
         </div>
 
-        {/* Config Section */}
-        <section className="bg-[#121212] border border-brand-border/30 rounded-3xl p-7 space-y-6 shadow-2xl">
-          <div className="flex items-center gap-2 text-brand-text">
-            <Settings size={18} className="text-brand-gold" />
-            <h2 className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em]">Configurações Gerais</h2>
-          </div>
-          <div className="grid gap-6">
-            <div className="space-y-2">
-              <span className="text-[8px] font-sans font-bold text-brand-text-muted/50 uppercase tracking-[0.3em]">WhatsApp de Vendas</span>
-              <div className="flex items-center justify-between bg-brand-bg rounded-xl px-4 py-3 border border-brand-border/30">
-                <span className="text-sm font-medium tracking-wider text-brand-text">{config?.whatsappNumber}</span>
-                <button
-                  onClick={handleEditWhatsApp}
-                  className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.1em] hover:text-brand-gold-light"
-                >
-                  Editar
-                </button>
-              </div>
+        <div className="max-w-5xl mx-auto px-6 md:px-12 py-8 md:py-12 space-y-12">
+          {/* Config Section */}
+          <section className="bg-[#181818] border border-white/5 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
+            <div className="flex items-center gap-2">
+              <Settings size={18} className="text-[#888]" />
+              <h2 className="text-sm font-semibold text-white tracking-wide">Configurações Gerais</h2>
             </div>
-
-            <div className="space-y-3">
-              <span className="text-[8px] font-sans font-bold text-brand-text-muted/50 uppercase tracking-[0.3em]">Imagens do Banner Inicial (Até 4)</span>
-              
-              <div className="flex flex-wrap gap-4">
-                {(config?.heroImageUrls?.length ? config.heroImageUrls : config?.heroImageUrl ? [config.heroImageUrl] : []).map((url, index) => (
-                  <div key={`${url}-${index}`} className="relative w-28 h-16 rounded-xl overflow-hidden bg-brand-bg border border-brand-border/30 group">
-                    <img
-                      src={url}
-                      alt={`Banner ${index + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <button 
-                        onClick={() => handleRemoveImage(index)}
-                        className="p-2 text-white hover:text-red-400 transition-colors"
-                        title="Remover"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                
-                {Math.max(0, 4 - (config?.heroImageUrls?.length ?? (config?.heroImageUrl ? 1 : 0))) > 0 && (
+            
+            <div className="grid gap-8">
+              <div className="space-y-3">
+                <span className="text-[10px] font-bold text-[#888] uppercase tracking-wider">WhatsApp de Vendas</span>
+                <div className="flex items-center justify-between bg-[#0F0F0F] rounded-xl px-4 py-3 border border-white/5">
+                  <span className="text-sm font-medium tracking-wider text-white">{config?.whatsappNumber}</span>
                   <button
-                    onClick={handleSelectHeroImage}
-                    className="w-28 h-16 rounded-xl border border-dashed border-brand-border/50 bg-brand-bg/20 flex flex-col items-center justify-center gap-1 text-brand-text-muted hover:text-brand-gold hover:border-brand-gold/50 transition-colors"
-                    title="Adicionar imagem"
+                    onClick={handleEditWhatsApp}
+                    className="text-[11px] text-[#888] hover:text-brand-gold font-bold uppercase tracking-wider transition-colors"
                   >
-                    <Plus size={16} />
+                    Editar
                   </button>
-                )}
+                </div>
               </div>
 
-              <input
-                ref={heroImageInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleHeroImageChange}
-                className="hidden"
-              />
-            </div>
-          </div>
-        </section>
-
-        {actionError && <p className="text-xs text-brand-gold-light font-semibold">{actionError}</p>}
-
-        {/* Products Section */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-brand-text">
-              <h2 className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em]">Produtos Cadastrados ({products.length})</h2>
-            </div>
-            <button
-              onClick={() => navigate('/admin/produto/novo')}
-              className="btn-primary flex items-center gap-2 !px-5 !py-2.5 !text-[10px]"
-            >
-              <Plus size={14} /> Novo Produto
-            </button>
-          </div>
-
-          <div className="grid gap-5">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className={`bg-[#131313] border shadow-lg rounded-3xl p-5 flex gap-5 transition-all duration-300 ${product.active ? 'border-brand-border/30 hover:border-brand-border/60' : 'border-red-900/20 opacity-70 grayscale-[20%]'}`}
-              >
-                <div className="w-24 h-28 rounded-xl overflow-hidden bg-brand-bg relative flex-shrink-0">
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                  {!product.active && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                      <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#FF5555]">Inativo</span>
+              <div className="space-y-4">
+                <span className="text-[10px] font-bold text-[#888] uppercase tracking-wider">Mídia Inicial (Banners)</span>
+                
+                <div className="flex flex-wrap gap-4">
+                  {(config?.heroImageUrls?.length ? config.heroImageUrls : config?.heroImageUrl ? [config.heroImageUrl] : []).map((url, index) => (
+                    <div key={`${url}-${index}`} className="relative w-32 aspect-video rounded-xl overflow-hidden bg-black border border-white/10 group">
+                      <img src={url} alt={`Banner ${index + 1}`} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                        <button 
+                          onClick={() => handleRemoveImage(index)}
+                          className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-colors"
+                          title="Remover Imagem"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
+                  ))}
+                  
+                  {Math.max(0, 4 - (config?.heroImageUrls?.length ?? (config?.heroImageUrl ? 1 : 0))) > 0 && (
+                     <button
+                       onClick={handleSelectHeroImage}
+                       className="w-32 aspect-video rounded-xl border border-dashed border-white/10 bg-[#0F0F0F] flex flex-col items-center justify-center gap-2 text-[#888] hover:text-white hover:border-white/30 transition-all hover:bg-white/5"
+                     >
+                       <Plus size={18} />
+                     </button>
                   )}
                 </div>
 
-                <div className="flex-1 flex flex-col justify-between py-1">
-                  <div>
-                    <h3 className="text-sm font-bold text-white line-clamp-1">{product.name}</h3>
-                    <p className="text-[10px] text-brand-text-muted/70 uppercase tracking-[0.2em] mt-0.5 mb-2">{product.category}</p>
-                    <PriceDisplay price={product.price} />
+                <input ref={heroImageInputRef} type="file" accept="image/*" multiple onChange={handleHeroImageChange} className="hidden" />
+              </div>
+            </div>
+          </section>
+
+          {actionError && <p className="text-xs text-red-400 font-medium px-4 py-3 bg-red-400/10 rounded-lg">{actionError}</p>}
+
+          {/* Products Section */}
+          <section className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="text-sm font-semibold text-white tracking-wide">
+                Produtos <span className="text-[#888] ml-2">({products.length})</span>
+              </h2>
+              <button
+                onClick={() => navigate('/admin/produto/novo')}
+                className="bg-brand-gold hover:bg-brand-gold-light text-black font-bold text-[11px] uppercase tracking-wider px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-brand-gold/20"
+              >
+                <Plus size={16} /> Adicionar Produto
+              </button>
+            </div>
+
+            <div className="grid gap-3">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-[#181818] border border-white/5 hover:border-brand-gold/30 rounded-2xl p-4 flex items-center justify-between transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#0F0F0F] relative flex-shrink-0">
+                      <img src={product.images[0]} alt={product.name} className={`w-full h-full object-cover ${!product.active ? 'grayscale opacity-50' : ''}`} referrerPolicy="no-referrer" />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-medium text-sm line-clamp-1">{product.name}</h3>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-[10px] text-[#888] uppercase tracking-widest">{product.category}</span>
+                        {product.active ? (
+                           <span className="text-[9px] font-bold uppercase tracking-wider text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">Ativo</span>
+                        ) : (
+                           <span className="text-[9px] font-bold uppercase tracking-wider text-[#888] bg-white/5 px-2 py-0.5 rounded-full">Pausado</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      onClick={() => handleToggleProduct(product)}
-                      className={`p-2.5 rounded-full transition-colors font-bold ${
-                        product.active 
-                          ? 'text-[#4CAF50] hover:bg-[#4CAF50]/10' 
-                          : 'text-[#FF5555] hover:bg-[#FF5555]/10'
-                      }`}
-                      title={product.active ? "Desativar da Vitrine" : "Ativar na Vitrine"}
-                    >
-                      <Power size={16} />
-                    </button>
-                    <div className="w-px h-4 bg-brand-border/50 mx-1" />
-                    <button
-                      onClick={() => navigate(`/admin/produto/editar/${product.id}`)}
-                      className="p-2.5 text-brand-text-muted hover:text-white transition-colors"
-                      title="Editar informações do produto"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProduct(product)}
-                      className="p-2.5 text-brand-text-muted hover:text-red-400 transition-colors"
-                      title="Excluir produto permanentemente"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => navigate(`/produto/${product.id}`)}
-                      className="p-2.5 text-brand-text-muted hover:text-brand-gold transition-colors"
-                      title="Testar visualização na loja"
-                    >
-                      <ExternalLink size={16} />
-                    </button>
+                  <div className="flex items-center gap-6">
+                    <div className="hidden md:block">
+                      <span className="text-sm font-medium text-white">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => navigate(`/produto/${product.id}`)} className="p-2 text-[#888] hover:text-white transition-colors" title="Visualizar">
+                        <ExternalLink size={16} />
+                      </button>
+                      <button onClick={() => navigate(`/admin/produto/editar/${product.id}`)} className="p-2 text-[#888] hover:text-white transition-colors" title="Editar">
+                        <Edit2 size={16} />
+                      </button>
+                      
+                      {/* Reticências para mais opções */}
+                      <div className="relative group/menu">
+                        <button className="p-2 text-[#888] hover:text-white transition-colors">
+                          <MoreHorizontal size={16} />
+                        </button>
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-[#181818] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all z-50 flex flex-col p-1">
+                           <button onClick={() => handleToggleProduct(product)} className="w-full text-left px-3 py-2 text-xs font-medium text-white hover:bg-white/5 rounded-lg">
+                             {product.active ? 'Pausar da vitrine' : 'Reativar na vitrine'}
+                           </button>
+                           <button onClick={() => handleDeleteProduct(product)} className="w-full text-left px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-lg">
+                             Excluir permanentemente
+                           </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {products.length === 0 && (
-              <div className="bg-[#121212] border border-brand-border/30 rounded-3xl p-10 text-center flex flex-col items-center justify-center space-y-4">
-                <div className="w-16 h-16 bg-brand-card/50 rounded-full flex items-center justify-center text-brand-text-muted">
-                   <Settings size={24} className="opacity-50" />
+              {products.length === 0 && (
+                <div className="bg-[#181818] border border-white/5 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-4">
+                  <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-[#888]">
+                     <Package size={20} />
+                  </div>
+                  <p className="text-xs uppercase tracking-widest font-extrabold text-[#888]">Nenhum produto cadastrado no momento.</p>
                 </div>
-                <p className="text-[11px] uppercase tracking-widest font-extrabold text-brand-text-muted/60">Nenhum produto cadastrado no momento.</p>
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
-    </PageWrapper>
+              )}
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }

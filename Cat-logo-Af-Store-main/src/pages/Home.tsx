@@ -74,7 +74,7 @@ export default function Home() {
               <ProductSection 
                 title="Novidades" 
                 products={newArrivals} 
-                layout="scroll"
+                layout="grid"
                 viewAllLink="/novidades"
               />
             )}

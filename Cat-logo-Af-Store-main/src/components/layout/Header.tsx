@@ -21,7 +21,7 @@ export default function Header({ onMenuOpen }: HeaderProps) {
         <img
           src="/af-logo.png"
           alt="AF Store"
-          className="h-10 w-auto object-contain"
+          className="h-12 w-auto object-contain"
         />
       </Link>
 

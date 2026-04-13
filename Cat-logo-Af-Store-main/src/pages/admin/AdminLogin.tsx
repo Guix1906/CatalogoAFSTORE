@@ -54,26 +54,6 @@ export default function AdminLogin() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setError('');
-    setMessage('');
-    setLoading(true);
-
-    try {
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/admin/dashboard`,
-        },
-      });
-
-      if (oauthError) throw oauthError;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao autenticar com Google');
-      setLoading(false);
-    }
-  };
-
   React.useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -153,14 +133,6 @@ export default function AdminLogin() {
                 {isRegisterMode ? 'Voltar para Login' : 'Solicitar Novo Acesso'}
               </button>
 
-              <button
-                type="button"
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                className="w-full bg-brand-bg border border-brand-border text-brand-text py-4 rounded-xl font-sans font-bold uppercase text-[9px] tracking-[0.2em] hover:bg-brand-card hover:border-brand-gold transition-all flex items-center justify-center gap-2"
-              >
-                Continuar com Google
-              </button>
             </div>
           </form>
         </div>

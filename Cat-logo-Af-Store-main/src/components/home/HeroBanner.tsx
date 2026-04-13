@@ -119,46 +119,48 @@ export default function HeroBanner() {
             className="h-full w-full object-cover opacity-60"
             referrerPolicy="no-referrer"
           />
-          
-            <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-16 px-6 text-center">
-              <motion.h2 
-                initial={{ y: 15, opacity: 0, filter: 'blur(4px)' }}
-                animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="font-banner-display text-4xl md:text-6xl font-bold text-brand-text mb-2 leading-tight normal-case"
-              >
-                {activeSlide.title.includes(' — ') ? (
-                  <>
-                    <span>{activeSlide.title.split(' — ')[0]}</span>
-                    <span className="font-banner-support block text-2xl md:text-3xl font-medium uppercase tracking-[0.2em] mt-2 text-brand-gold">
-                      {activeSlide.title.split(' — ')[1]}
-                    </span>
-                  </>
-                ) : (
-                  <span>{activeSlide.title}</span>
-                )}
-              </motion.h2>
-              <motion.p 
-                initial={{ y: 15, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                className="font-banner-support text-brand-text-muted text-[10px] md:text-xs font-normal uppercase tracking-[0.2em] mb-8"
-              >
-                 {activeSlide.subtitle}
-              </motion.p>
-              <motion.button
-                initial={{ y: 15, opacity: 0, scale: 0.95 }}
-                animate={{ y: 0, opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                 onClick={() => navigate(activeSlide.link)}
-                className="btn-primary flex items-center justify-center gap-2 group will-change-transform"
-              >
-                Ver Coleção 
-                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-            </div>
         </motion.div>
       </AnimatePresence>
+
+      <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-16 px-6 text-center">
+        <motion.h2
+          key={`title-${activeSlide.id}`}
+          initial={{ y: 15, opacity: 0, filter: 'blur(4px)' }}
+          animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="font-banner-display text-4xl md:text-6xl font-bold text-brand-text mb-2 leading-tight normal-case"
+        >
+          {activeSlide.title.includes(' — ') ? (
+            <>
+              <span>{activeSlide.title.split(' — ')[0]}</span>
+              <span className="font-banner-support block text-2xl md:text-3xl font-medium uppercase tracking-[0.2em] mt-2 text-brand-gold">
+                {activeSlide.title.split(' — ')[1]}
+              </span>
+            </>
+          ) : (
+            <span>{activeSlide.title}</span>
+          )}
+        </motion.h2>
+
+        <motion.p
+          key={`subtitle-${activeSlide.id}`}
+          initial={{ y: 15, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="font-banner-support text-brand-text-muted text-[10px] md:text-xs font-normal uppercase tracking-[0.2em] mb-8"
+        >
+          {activeSlide.subtitle}
+        </motion.p>
+
+        <button
+          onClick={() => navigate(activeSlide.link)}
+          className="btn-primary flex items-center justify-center gap-2 group touch-manipulation"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
+        >
+          Ver Coleção
+          <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+        </button>
+      </div>
 
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
         {slides.map((_, i) => (

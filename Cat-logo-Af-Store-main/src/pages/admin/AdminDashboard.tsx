@@ -181,13 +181,12 @@ export default function AdminDashboard() {
     navigate('/admin');
   };
 
-  if (loading) return null;
   if (authError) return null;
 
   return (
     <div className="flex h-screen bg-[#0F0F0F] text-[#E5E5E5] overflow-hidden">
       {/* Sidebar (Desktop) */}
-      <aside className="w-64 bg-[#121212] border-r border-white/5 hidden md:flex flex-col justify-between py-8 px-6">
+      <aside className="w-64 bg-[#121212] border-r border-white/5 hidden md:flex flex-col justify-between py-8 px-6 flex-shrink-0">
         <div>
           <div className="mb-12">
             <h1 className="text-xl font-serif italic text-white tracking-wide">Admin<span className="text-brand-gold">.</span></h1>
@@ -216,152 +215,168 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {/* Mobile Header */}
-        <div className="md:hidden flex items-center justify-between px-6 py-5 bg-[#121212] border-b border-white/5">
-          <div className="space-y-0.5">
-            <h1 className="text-lg font-serif italic text-white">Admin<span className="text-brand-gold">.</span></h1>
-          </div>
+        <div className="md:hidden flex items-center justify-between px-6 py-5 bg-[#121212] border-b border-white/5 sticky top-0 z-40">
+          <h1 className="text-lg font-serif italic text-white">Admin<span className="text-brand-gold">.</span></h1>
           <button onClick={handleLogout} className="p-2 text-[#888] hover:text-white">
             <LogOut size={18} />
           </button>
         </div>
 
         <div className="max-w-5xl mx-auto px-6 md:px-12 py-8 md:py-12 space-y-12">
-          {/* Config Section */}
-          <section className="bg-[#181818] border border-white/5 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
-            <div className="flex items-center gap-2">
-              <Settings size={18} className="text-[#888]" />
-              <h2 className="text-sm font-semibold text-white tracking-wide">Configurações Gerais</h2>
-            </div>
-            
-            <div className="grid gap-8">
-              <div className="space-y-3">
-                <span className="text-[10px] font-bold text-[#888] uppercase tracking-wider">WhatsApp de Vendas</span>
-                <div className="flex items-center justify-between bg-[#0F0F0F] rounded-xl px-4 py-3 border border-white/5">
-                  <span className="text-sm font-medium tracking-wider text-white">{config?.whatsappNumber}</span>
-                  <button
-                    onClick={handleEditWhatsApp}
-                    className="text-[11px] text-[#888] hover:text-brand-gold font-bold uppercase tracking-wider transition-colors"
-                  >
-                    Editar
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <span className="text-[10px] font-bold text-[#888] uppercase tracking-wider">Mídia Inicial (Banners)</span>
-                
-                <div className="flex flex-wrap gap-4">
-                  {(config?.heroImageUrls?.length ? config.heroImageUrls : config?.heroImageUrl ? [config.heroImageUrl] : []).map((url, index) => (
-                    <div key={`${url}-${index}`} className="relative w-32 aspect-video rounded-xl overflow-hidden bg-black border border-white/10 group">
-                      <img src={url} alt={`Banner ${index + 1}`} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                        <button 
-                          onClick={() => handleRemoveImage(index)}
-                          className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-colors"
-                          title="Remover Imagem"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
+          {loading ? (
+            <div className="space-y-12 animate-pulse">
+              <div className="h-48 bg-[#181818] rounded-2xl border border-white/5 w-full" />
+              <div className="space-y-6">
+                <div className="h-8 w-48 bg-[#181818] rounded-lg" />
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="h-20 bg-[#181818] rounded-2xl border border-white/5" />
                   ))}
-                  
-                  {Math.max(0, 4 - (config?.heroImageUrls?.length ?? (config?.heroImageUrl ? 1 : 0))) > 0 && (
-                     <button
-                       onClick={handleSelectHeroImage}
-                       className="w-32 aspect-video rounded-xl border border-dashed border-white/10 bg-[#0F0F0F] flex flex-col items-center justify-center gap-2 text-[#888] hover:text-white hover:border-white/30 transition-all hover:bg-white/5"
-                     >
-                       <Plus size={18} />
-                     </button>
-                  )}
                 </div>
-
-                <input ref={heroImageInputRef} type="file" accept="image/*" multiple onChange={handleHeroImageChange} className="hidden" />
               </div>
             </div>
-          </section>
-
-          {actionError && <p className="text-xs text-red-400 font-medium px-4 py-3 bg-red-400/10 rounded-lg">{actionError}</p>}
-
-          {/* Products Section */}
-          <section className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h2 className="text-sm font-semibold text-white tracking-wide">
-                Produtos <span className="text-[#888] ml-2">({products.length})</span>
-              </h2>
-              <button
-                onClick={() => navigate('/admin/produto/novo')}
-                className="bg-brand-gold hover:bg-brand-gold-light text-black font-bold text-[11px] uppercase tracking-wider px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-brand-gold/20"
-              >
-                <Plus size={16} /> Adicionar Produto
-              </button>
-            </div>
-
-            <div className="grid gap-3">
-              {products.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-[#181818] border border-white/5 hover:border-brand-gold/30 rounded-2xl p-4 flex items-center justify-between transition-all duration-200 group"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#0F0F0F] relative flex-shrink-0">
-                      <img src={product.images[0]} alt={product.name} className={`w-full h-full object-cover ${!product.active ? 'grayscale opacity-50' : ''}`} referrerPolicy="no-referrer" />
-                    </div>
-                    <div>
-                      <h3 className="text-white font-medium text-sm line-clamp-1">{product.name}</h3>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-[10px] text-[#888] uppercase tracking-widest">{product.category}</span>
-                        {product.active ? (
-                           <span className="text-[9px] font-bold uppercase tracking-wider text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">Ativo</span>
-                        ) : (
-                           <span className="text-[9px] font-bold uppercase tracking-wider text-[#888] bg-white/5 px-2 py-0.5 rounded-full">Pausado</span>
-                        )}
-                      </div>
+          ) : (
+            <>
+              {/* Config Section */}
+              <section className="bg-[#181818] border border-white/5 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
+                <div className="flex items-center gap-2">
+                  <Settings size={18} className="text-[#888]" />
+                  <h2 className="text-sm font-semibold text-white tracking-wide uppercase tracking-[0.1em]">Geral</h2>
+                </div>
+                
+                <div className="grid gap-8">
+                  <div className="space-y-3">
+                    <span className="text-[10px] font-bold text-[#888] uppercase tracking-[0.2em]">WhatsApp</span>
+                    <div className="flex items-center justify-between bg-[#0F0F0F] rounded-xl px-4 py-3 border border-white/5">
+                      <span className="text-sm font-medium tracking-wider text-white">{config?.whatsappNumber}</span>
+                      <button
+                        onClick={handleEditWhatsApp}
+                        className="text-[11px] text-brand-gold hover:text-brand-gold-light font-bold uppercase tracking-wider transition-colors"
+                      >
+                        Editar
+                      </button>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6">
-                    <div className="hidden md:block">
-                      <span className="text-sm font-medium text-white">R$ {product.price.toFixed(2).replace('.', ',')}</span>
-                    </div>
+                  <div className="space-y-4">
+                    <span className="text-[10px] font-bold text-[#888] uppercase tracking-[0.2em]">Banners Principais</span>
                     
-                    <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => navigate(`/produto/${product.id}`)} className="p-2 text-[#888] hover:text-white transition-colors" title="Visualizar">
-                        <ExternalLink size={16} />
-                      </button>
-                      <button onClick={() => navigate(`/admin/produto/editar/${product.id}`)} className="p-2 text-[#888] hover:text-white transition-colors" title="Editar">
-                        <Edit2 size={16} />
-                      </button>
+                    <div className="flex flex-wrap gap-4">
+                      {(config?.heroImageUrls?.length ? config.heroImageUrls : config?.heroImageUrl ? [config.heroImageUrl] : []).map((url, index) => (
+                        <div key={`${url}-${index}`} className="relative w-32 aspect-video rounded-xl overflow-hidden bg-[#0F0F0F] border border-white/5 group">
+                          <img src={url} alt={`Banner ${index + 1}`} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-300" />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                            <button 
+                              onClick={() => handleRemoveImage(index)}
+                              className="p-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-all duration-200"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                       
-                      {/* Reticências para mais opções */}
-                      <div className="relative group/menu">
-                        <button className="p-2 text-[#888] hover:text-white transition-colors">
-                          <MoreHorizontal size={16} />
-                        </button>
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-[#181818] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all z-50 flex flex-col p-1">
-                           <button onClick={() => handleToggleProduct(product)} className="w-full text-left px-3 py-2 text-xs font-medium text-white hover:bg-white/5 rounded-lg">
-                             {product.active ? 'Pausar da vitrine' : 'Reativar na vitrine'}
-                           </button>
-                           <button onClick={() => handleDeleteProduct(product)} className="w-full text-left px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-lg">
-                             Excluir permanentemente
-                           </button>
+                      {Math.max(0, 4 - (config?.heroImageUrls?.length ?? (config?.heroImageUrl ? 1 : 0))) > 0 && (
+                         <button
+                           onClick={handleSelectHeroImage}
+                           className="w-32 aspect-video rounded-xl border border-dashed border-white/10 bg-[#0F0F0F] flex flex-col items-center justify-center gap-2 text-[#888] hover:text-white hover:border-brand-gold/30 transition-all hover:bg-white/5"
+                         >
+                           <Plus size={18} />
+                         </button>
+                      )}
+                    </div>
+
+                    <input ref={heroImageInputRef} type="file" accept="image/*" multiple onChange={handleHeroImageChange} className="hidden" />
+                  </div>
+                </div>
+              </section>
+
+              {actionError && <p className="text-xs text-red-400 font-medium px-4 py-3 bg-red-400/10 rounded-lg">{actionError}</p>}
+
+              {/* Products Section */}
+              <section className="space-y-6">
+                <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                  <h2 className="text-sm font-semibold text-white uppercase tracking-[0.1em]">
+                    Catálogo <span className="text-[#888] ml-2 text-[10px]">({products.length})</span>
+                  </h2>
+                  <button
+                    onClick={() => navigate('/admin/produto/novo')}
+                    className="bg-brand-gold hover:bg-brand-gold-light text-black font-bold text-[10px] uppercase tracking-wider px-6 py-3 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-brand-gold/20 active:scale-95"
+                  >
+                    <Plus size={16} /> Novo Produto
+                  </button>
+                </div>
+
+                <div className="grid gap-3 pb-20">
+                  {products.map((product) => (
+                    <div
+                      key={product.id}
+                      className="bg-[#181818] border border-white/5 hover:border-white/10 rounded-2xl p-4 flex items-center justify-between transition-all duration-200 group"
+                    >
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#0F0F0F] border border-white/5 flex-shrink-0">
+                          <img src={product.images[0]} alt={product.name} className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${!product.active ? 'grayscale opacity-50' : ''}`} referrerPolicy="no-referrer" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-white font-medium text-sm truncate uppercase tracking-tight">{product.name}</h3>
+                          <div className="flex items-center gap-3 mt-1.5">
+                            <span className="text-[10px] text-[#888] font-bold uppercase tracking-wider">{product.category}</span>
+                            {product.active ? (
+                               <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#222] bg-brand-gold px-2 py-0.5 rounded-sm">Ativo</span>
+                            ) : (
+                               <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#888] bg-white/5 border border-white/5 px-2 py-0.5 rounded-sm">Pausado</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-6">
+                        <div className="hidden sm:block text-right">
+                          <span className="text-sm font-bold text-white tracking-tight">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
+                          <button onClick={() => navigate(`/produto/${product.id}`)} className="p-2.5 text-[#888] hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Visualizar Loja">
+                            <ExternalLink size={16} />
+                          </button>
+                          <button onClick={() => navigate(`/admin/produto/editar/${product.id}`)} className="p-2.5 text-[#888] hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Editar">
+                            <Edit2 size={16} />
+                          </button>
+                          
+                          <div className="relative group/menu">
+                            <button className="p-2.5 text-[#888] hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                              <MoreHorizontal size={16} />
+                            </button>
+                            <div className="absolute right-0 top-full mt-2 w-52 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all z-50 flex flex-col p-1.5">
+                               <button onClick={() => handleToggleProduct(product)} className="w-full text-left px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-white hover:bg-white/5 rounded-lg transition-colors">
+                                 {product.active ? 'Suspender Vendas' : 'Ativar Vendas'}
+                               </button>
+                               <div className="h-px bg-white/5 my-1" />
+                               <button onClick={() => handleDeleteProduct(product)} className="w-full text-left px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                                 Excluir Produto
+                               </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  ))}
 
-              {products.length === 0 && (
-                <div className="bg-[#181818] border border-white/5 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-4">
-                  <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-[#888]">
-                     <Package size={20} />
-                  </div>
-                  <p className="text-xs uppercase tracking-widest font-extrabold text-[#888]">Nenhum produto cadastrado no momento.</p>
+                  {products.length === 0 && (
+                    <div className="bg-[#181818] border border-white/5 rounded-2xl p-16 text-center flex flex-col items-center justify-center space-y-4">
+                      <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-[#888]">
+                         <Package size={24} />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs uppercase tracking-[0.2em] font-extrabold text-[#888]">Catálogo Vazio</p>
+                        <p className="text-[10px] text-[#555] uppercase tracking-widest leading-relaxed">Comece adicionando peças<br/>para sua vitrine.</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </section>
+              </section>
+            </>
+          )}
         </div>
       </main>
     </div>

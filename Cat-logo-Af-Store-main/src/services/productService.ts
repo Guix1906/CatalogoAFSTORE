@@ -87,13 +87,19 @@ const setCache = <T>(key: string, data: T) => {
 
 export const productService = {
   async getProducts(): Promise<Product[]> {
+    const cacheKey = 'all_products';
+    const cached = getCached<Product[]>(cacheKey);
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('products')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data || []).map(toProduct);
+    const result = (data || []).map(toProduct);
+    setCache(cacheKey, result);
+    return result;
   },
 
   async getActiveProducts(): Promise<Product[]> {

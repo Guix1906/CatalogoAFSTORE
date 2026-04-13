@@ -176,7 +176,20 @@ export default function AdminProductForm() {
     });
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0F0F0F] animate-pulse">
+        <header className="px-6 h-20 bg-[#0F0F0F] border-b border-white/5 flex items-center justify-between">
+          <div className="h-10 w-48 bg-[#181818] rounded-full" />
+          <div className="h-10 w-32 bg-[#181818] rounded-xl" />
+        </header>
+        <main className="max-w-4xl mx-auto px-6 pt-10 grid md:grid-cols-3 gap-8">
+          <div className="md:col-span-2 h-[600px] bg-[#181818] rounded-3xl" />
+          <div className="h-[400px] bg-[#181818] rounded-3xl" />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0F0F0F] text-[#E5E5E5] font-sans pb-24">

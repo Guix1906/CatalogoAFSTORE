@@ -30,6 +30,11 @@ export const adminAuthService = {
       return { isAdmin: false, error: 'Faça login para continuar.' };
     }
 
+    // Tentar recuperar do cache para navegação instantânea
+    const cacheKey = `is_admin_${session.user.id}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached === 'true') return { isAdmin: true };
+
     const { data, error } = await supabase
       .from('user_roles')
       .select('id')
@@ -45,10 +50,17 @@ export const adminAuthService = {
       return { isAdmin: false, error: 'Seu usuário não possui permissão de administrador.' };
     }
 
+    // Salvar no cache
+    sessionStorage.setItem(cacheKey, 'true');
     return { isAdmin: true };
   },
 
   async signOut() {
+    // Limpar todos os caches de sessão
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      sessionStorage.removeItem(`is_admin_${session.user.id}`);
+    }
     await supabase.auth.signOut();
   },
 };

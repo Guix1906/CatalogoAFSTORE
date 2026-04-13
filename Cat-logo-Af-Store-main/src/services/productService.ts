@@ -4,6 +4,8 @@ import { Product } from '../types';
 
 type ProductRow = Tables<'products'>;
 
+const PRODUCT_FIELDS = 'id, name, slug, category, price, original_price, discount, images, sizes, colors, description, measurements, is_new, is_best_seller, is_on_sale, active, gender, tags, created_at';
+
 const toProduct = (row: ProductRow): Product => {
   const colors = Array.isArray(row.colors)
     ? (row.colors as Product['colors'])
@@ -67,105 +69,76 @@ const sanitizePayload = (product: Partial<Product>) => {
   };
 };
 
-// Sistema de Cache Local Leve para evitar requisições duplicadas
-interface CacheEntry<T> {
-  data: T;
-  timestamp: number;
-}
-const cache = new Map<string, CacheEntry<any>>();
-const CACHE_TTL = 1000 * 60 * 5; // 5 minutos
-
-const getCached = <T>(key: string): T | null => {
-  const entry = cache.get(key);
-  if (entry && Date.now() - entry.timestamp < CACHE_TTL) return entry.data;
-  return null;
-};
-
-const setCache = <T>(key: string, data: T) => {
-  cache.set(key, { data, timestamp: Date.now() });
-};
-
 export const productService = {
-  async getProducts(): Promise<Product[]> {
-    const cacheKey = 'all_products';
-    const cached = getCached<Product[]>(cacheKey);
-    if (cached) return cached;
+  async getProducts(page = 0, limit = 50): Promise<Product[]> {
+    const from = page * limit;
+    const to = from + limit - 1;
 
     const { data, error } = await supabase
       .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select(PRODUCT_FIELDS)
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (error) throw error;
-    const result = (data || []).map(toProduct);
-    setCache(cacheKey, result);
-    return result;
+    return (data || []).map(toProduct);
   },
 
-  async getActiveProducts(): Promise<Product[]> {
-    const cacheKey = 'active_products';
-    const cached = getCached<Product[]>(cacheKey);
-    if (cached) return cached;
+  async getActiveProducts(page = 0, limit = 50): Promise<Product[]> {
+    const from = page * limit;
+    const to = from + limit - 1;
 
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select(PRODUCT_FIELDS)
       .eq('active', true)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (error) throw error;
-    const result = (data || []).map(toProduct);
-    setCache(cacheKey, result);
-    return result;
+    return (data || []).map(toProduct);
   },
 
   async getProductById(id: string): Promise<Product | undefined> {
-    const cacheKey = `product_${id}`;
-    const cached = getCached<Product>(cacheKey);
-    if (cached) return cached;
-
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select(PRODUCT_FIELDS)
       .eq('id', id)
       .maybeSingle();
 
     if (error) throw error;
-    if (data) {
-      const result = toProduct(data);
-      setCache(cacheKey, result);
-      return result;
-    }
-    return undefined;
+    return data ? toProduct(data) : undefined;
   },
 
-  async getProductsByCategory(categorySlug: string): Promise<Product[]> {
-    const cacheKey = `category_${categorySlug}`;
-    const cached = getCached<Product[]>(cacheKey);
-    if (cached) return cached;
+  async getProductsByCategory(categorySlug: string, page = 0, limit = 50): Promise<Product[]> {
+    const from = page * limit;
+    const to = from + limit - 1;
 
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select(PRODUCT_FIELDS)
       .eq('active', true)
       .eq('category', categorySlug)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (error) throw error;
-    const result = (data || []).map(toProduct);
-    setCache(cacheKey, result);
-    return result;
+    return (data || []).map(toProduct);
   },
 
   async searchProducts(query: string): Promise<Product[]> {
-    const products = await this.getActiveProducts();
-    const lowerQuery = query.toLowerCase();
-    return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(lowerQuery) ||
-        p.category.toLowerCase().includes(lowerQuery) ||
-        p.tags.some((t) => t.toLowerCase().includes(lowerQuery)),
-    );
+    if (!query.trim()) return [];
+
+    const { data, error } = await supabase
+      .from('products')
+      .select(PRODUCT_FIELDS)
+      .eq('active', true)
+      .or(`name.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (error) throw error;
+    return (data || []).map(toProduct);
   },
 
   async createProduct(product: Partial<Product>): Promise<Product> {
@@ -173,11 +146,10 @@ export const productService = {
     const { data, error } = await supabase
       .from('products')
       .insert(payload)
-      .select('*')
+      .select(PRODUCT_FIELDS)
       .single();
 
     if (error) throw error;
-    cache.clear(); // Invalida o cache
     return toProduct(data);
   },
 
@@ -187,23 +159,21 @@ export const productService = {
       .from('products')
       .update(payload)
       .eq('id', id)
-      .select('*')
+      .select(PRODUCT_FIELDS)
       .single();
 
     if (error) throw error;
-    cache.clear(); // Invalida o cache
     return toProduct(data);
   },
 
   async deleteProduct(id: string): Promise<void> {
     const { error } = await supabase.from('products').delete().eq('id', id);
     if (error) throw error;
-    cache.clear(); // Invalida o cache
   },
 
   async toggleProductActive(id: string, active: boolean): Promise<void> {
     const { error } = await supabase.from('products').update({ active }).eq('id', id);
     if (error) throw error;
-    cache.clear(); // Invalida o cache
   },
 };
+

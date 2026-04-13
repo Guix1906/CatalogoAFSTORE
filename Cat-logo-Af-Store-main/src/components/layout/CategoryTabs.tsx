@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { CATEGORIES } from '../../constants';
 
-export default function CategoryTabs() {
+const CategoryTabs = memo(function CategoryTabs() {
   const tabs = [
     { name: 'Todos', slug: '' },
     ...CATEGORIES,
@@ -29,4 +30,7 @@ export default function CategoryTabs() {
       </div>
     </div>
   );
-}
+});
+
+export default CategoryTabs;
+

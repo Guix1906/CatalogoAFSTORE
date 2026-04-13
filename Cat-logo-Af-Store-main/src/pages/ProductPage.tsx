@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import ProductGallery from '../components/product/ProductGallery';
 import SizeSelector from '../components/product/SizeSelector';
@@ -8,36 +8,31 @@ import WhatsAppButton from '../components/product/WhatsAppButton';
 import ProductCard from '../components/product/ProductCard';
 import PriceDisplay from '../components/ui/PriceDisplay';
 import Badge from '../components/ui/Badge';
-import { productService } from '../services/productService';
-import { Product } from '../types';
+import { useProduct, useProductsByCategory } from '../hooks/useOptimizedQueries';
 import { ChevronLeft, Ruler, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [isDescOpen, setIsDescOpen] = useState(true);
   const [isMeasuresOpen, setIsMeasuresOpen] = useState(false);
 
-  useEffect(() => {
-    const loadProduct = async () => {
-      if (id) {
-        const p = await productService.getProductById(id);
-        if (p) {
-          setProduct(p);
-          const related = await productService.getProductsByCategory(p.category);
-          setRelatedProducts(related.filter(item => item.id !== p.id).slice(0, 4));
-        }
-      }
-    };
-    loadProduct();
-  }, [id]);
+  const { data: product, isLoading: isLoadingProduct } = useProduct(id || '');
+  const { data: categoryProducts, isLoading: isLoadingRelated } = useProductsByCategory(
+    product?.category || '',
+    0,
+    10
+  );
 
-  if (!product) {
+  const relatedProducts = useMemo(() => {
+    if (!categoryProducts || !product) return [];
+    return categoryProducts.filter((item) => item.id !== product.id).slice(0, 4);
+  }, [categoryProducts, product]);
+
+  if (isLoadingProduct || !product) {
     return (
       <PageWrapper>
         <div className="sticky top-0 z-50 px-4 h-20 flex items-center justify-between bg-brand-bg/90 backdrop-blur-xl border-b border-brand-border/50">
@@ -194,3 +189,4 @@ export default function ProductPage() {
     </PageWrapper>
   );
 }
+

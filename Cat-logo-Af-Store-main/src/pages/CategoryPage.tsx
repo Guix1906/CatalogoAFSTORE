@@ -1,46 +1,33 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import ProductCard from '../components/product/ProductCard';
 import { CATEGORIES } from '../constants';
-import { productService } from '../services/productService';
-import { Product } from '../types';
+import { useActiveProducts, useProductsByCategory } from '../hooks/useOptimizedQueries';
 import { ChevronLeft, SlidersHorizontal } from 'lucide-react';
+import { SectionSkeleton } from '../components/layout/Skeletons';
 
 export default function CategoryPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<Product[]>([]);
   const [sortBy, setSortBy] = useState('relevance');
   const [selectedSize, setSelectedSize] = useState('Todos');
-  const [isLoading, setIsLoading] = useState(true);
+
+  const { data: activeProducts, isLoading: isLoadingActive } = useActiveProducts(0, 100);
+  const { data: catProducts, isLoading: isLoadingCat } = useProductsByCategory(
+    slug !== 'ofertas' ? slug || '' : '',
+    0,
+    100
+  );
+
+  const isLoading = slug === 'ofertas' ? isLoadingActive : isLoadingCat;
+  const products = useMemo(() => {
+    if (slug === 'ofertas') return (activeProducts || []).filter(p => p.isOnSale);
+    return catProducts || [];
+  }, [slug, activeProducts, catProducts]);
 
   const category = CATEGORIES.find(c => c.slug === slug);
 
-  useEffect(() => {
-    let active = true;
-    const loadProducts = async () => {
-      setIsLoading(true);
-      let result: Product[] = [];
-      try {
-        if (slug === 'ofertas') {
-          const all = await productService.getActiveProducts();
-          result = all.filter(p => p.isOnSale);
-        } else if (slug) {
-          result = await productService.getProductsByCategory(slug);
-        }
-      } finally {
-        if (active) {
-          setProducts(result);
-          setIsLoading(false);
-        }
-      }
-    };
-    loadProducts();
-    
-    return () => { active = false; };
-  }, [slug]);
-  
   const filteredProducts = useMemo(() => {
     let result = [...products];
     if (selectedSize !== 'Todos') {
@@ -90,42 +77,35 @@ export default function CategoryPage() {
         </div>
       </div>
 
-      <div className="px-6 py-8 flex items-center justify-between border-b border-brand-border/30 mb-8">
-        <div className="flex flex-col">
-          <span className="text-[10px] font-sans font-extrabold uppercase tracking-[0.2em] text-brand-text">
-            {filteredProducts.length} Itens
-          </span>
-          <span className="text-[8px] font-sans font-medium text-brand-text-muted uppercase tracking-[0.1em]">Catalogo Ativo</span>
-        </div>
-        
-        <div className="flex items-center gap-3 bg-brand-card/30 px-4 py-2 rounded-full border border-brand-border/50">
-          <SlidersHorizontal size={12} className="text-brand-gold" />
-          <select 
-            value={sortBy} 
-            onChange={(e) => setSortBy(e.target.value)}
-            className="bg-transparent focus:outline-none text-[9px] font-sans font-extrabold uppercase tracking-[0.1em] text-brand-text cursor-pointer"
-          >
-            <option value="relevance">Sort By: Featured</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="newest">Arrival Date</option>
-          </select>
-        </div>
-      </div>
-
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-6 pb-20">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="space-y-3">
-              <div className="aspect-[3/4] bg-brand-card/30 rounded-xl border border-brand-border/30 animate-pulse" />
-              <div className="h-3.5 w-3/4 bg-brand-card/40 rounded animate-pulse" />
-              <div className="h-3 w-1/3 bg-brand-card/20 rounded animate-pulse" />
-              <div className="h-4 w-1/2 bg-brand-card/30 rounded animate-pulse" />
-            </div>
-          ))}
+        <div className="-mt-12">
+          <SectionSkeleton titleWidth="w-0" count={12} />
         </div>
       ) : (
         <>
+          <div className="px-6 py-8 flex items-center justify-between border-b border-brand-border/30 mb-8">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-sans font-extrabold uppercase tracking-[0.2em] text-brand-text">
+                {filteredProducts.length} Itens
+              </span>
+              <span className="text-[8px] font-sans font-medium text-brand-text-muted uppercase tracking-[0.1em]">Catalogo Ativo</span>
+            </div>
+            
+            <div className="flex items-center gap-3 bg-brand-card/30 px-4 py-2 rounded-full border border-brand-border/50">
+              <SlidersHorizontal size={12} className="text-brand-gold" />
+              <select 
+                value={sortBy} 
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent focus:outline-none text-[9px] font-sans font-extrabold uppercase tracking-[0.1em] text-brand-text cursor-pointer"
+              >
+                <option value="relevance">Sort By: Featured</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="newest">Arrival Date</option>
+              </select>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-6 pb-20">
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
@@ -151,3 +131,4 @@ export default function CategoryPage() {
     </PageWrapper>
   );
 }
+

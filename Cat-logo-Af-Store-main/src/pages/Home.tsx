@@ -1,88 +1,61 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import HeroBanner from '../components/home/HeroBanner';
 import CategoryTabs from '../components/layout/CategoryTabs';
 import ProductSection from '../components/home/ProductSection';
 import WhatsAppBanner from '../components/home/WhatsAppBanner';
-import { productService } from '../services/productService';
-import { Product } from '../types';
+import { useActiveProducts } from '../hooks/useOptimizedQueries';
+import { SectionSkeleton, HeroSkeleton } from '../components/layout/Skeletons';
 
 export default function Home() {
-  const [bestSellers, setBestSellers] = useState<Product[]>([]);
-  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
-  const [onSale, setOnSale] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: products, isLoading } = useActiveProducts(0, 50);
 
-  useEffect(() => {
-    let active = true;
-    const loadData = async () => {
-      try {
-        const all = await productService.getActiveProducts();
-        if (active) {
-          setBestSellers(all.filter(p => p.isBestSeller).slice(0, 4));
-          setNewArrivals(all.filter(p => p.isNew).slice(0, 6));
-          setOnSale(all.filter(p => p.isOnSale).slice(0, 4));
-          setIsLoading(false);
-        }
-      } catch (error) {
-        if (active) setIsLoading(false);
-      }
-    };
-    loadData();
+  const sections = useMemo(() => {
+    if (!products) return { bestSellers: [], newArrivals: [], onSale: [] };
     
-    return () => {
-      active = false;
+    return {
+      bestSellers: products.filter(p => p.isBestSeller).slice(0, 4),
+      newArrivals: products.filter(p => p.isNew).slice(0, 6),
+      onSale: products.filter(p => p.isOnSale).slice(0, 4)
     };
-  }, []);
+  }, [products]);
 
   return (
     <PageWrapper>
       <div className="pt-16"> {/* Spacer for fixed header */}
         <CategoryTabs />
-        <HeroBanner />
         
         {isLoading ? (
-          <div className="py-8 px-4 space-y-12">
-            <div className="space-y-4">
-              <div className="h-6 w-48 bg-brand-card/50 rounded animate-pulse" />
-              <div className="grid grid-cols-2 gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="aspect-[3/4] bg-brand-card/30 rounded-2xl animate-pulse" />
-                ))}
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div className="h-6 w-32 bg-brand-card/50 rounded animate-pulse" />
-              <div className="flex gap-4 overflow-hidden">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-64 w-[160px] flex-shrink-0 bg-brand-card/30 rounded-2xl animate-pulse" />
-                ))}
-              </div>
-            </div>
-          </div>
+          <>
+            <HeroSkeleton />
+            <SectionSkeleton titleWidth="w-48" count={4} />
+            <SectionSkeleton titleWidth="w-32" count={4} />
+          </>
         ) : (
           <>
-            {bestSellers.length > 0 && (
+            <HeroBanner />
+            
+            {sections.bestSellers.length > 0 && (
               <ProductSection 
                 title="Mais Vendidos" 
-                products={bestSellers} 
+                products={sections.bestSellers} 
                 layout="grid"
               />
             )}
 
-            {newArrivals.length > 0 && (
+            {sections.newArrivals.length > 0 && (
               <ProductSection 
                 title="Novidades" 
-                products={newArrivals} 
+                products={sections.newArrivals} 
                 layout="grid"
                 viewAllLink="/novidades"
               />
             )}
 
-            {onSale.length > 0 && (
+            {sections.onSale.length > 0 && (
               <ProductSection 
                 title="Promoções" 
-                products={onSale} 
+                products={sections.onSale} 
                 layout="grid"
                 viewAllLink="/categoria/ofertas"
               />
@@ -95,3 +68,4 @@ export default function Home() {
     </PageWrapper>
   );
 }
+

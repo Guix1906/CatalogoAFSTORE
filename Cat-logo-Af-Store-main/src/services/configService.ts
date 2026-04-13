@@ -2,23 +2,24 @@ import { AppConfig } from '../types';
 import { supabase } from '../integrations/supabase/client';
 import configData from '../data/config.json';
 
+const CONFIG_FIELDS = 'id, whatsapp_number, whatsapp_message, hero_image_url, hero_image_urls';
+
 export const configService = {
   async getConfig(): Promise<AppConfig> {
     try {
       const { data, error } = await supabase
         .from('app_config')
-        .select('*')
+        .select(CONFIG_FIELDS)
         .maybeSingle();
 
       if (error || !data) {
-        console.warn('Using fallback config due to database error or empty table:', error);
+        if (error) console.warn('Using fallback config due to database error:', error);
         return configData as AppConfig;
       }
 
       return {
         whatsappNumber: data.whatsapp_number,
         whatsappMessage: data.whatsapp_message,
-        // Fallback for missing columns in types.ts but present in types.ts
         heroImageUrl: (data as any).hero_image_url || configData.heroImageUrl,
         heroImageUrls: (data as any).hero_image_urls || configData.heroImageUrls,
       };
@@ -42,7 +43,6 @@ export const configService = {
       hero_image_urls: config.heroImageUrls,
     };
 
-    // We try to update the first row or insert if it doesn't exist
     const { data: existing } = await supabase.from('app_config').select('id').maybeSingle();
 
     if (existing) {
@@ -59,3 +59,4 @@ export const configService = {
     }
   }
 };
+

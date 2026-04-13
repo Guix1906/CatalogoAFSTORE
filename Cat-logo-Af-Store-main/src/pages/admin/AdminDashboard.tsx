@@ -45,10 +45,13 @@ export default function AdminDashboard() {
 
   const handleToggleProduct = async (product: Product) => {
     setActionError('');
+    // Optimistic update — muda estado local imediatamente
+    setProducts(prev => prev.map(p => p.id === product.id ? { ...p, active: !p.active } : p));
     try {
       await productService.toggleProductActive(product.id, !product.active);
-      await loadData();
     } catch (err) {
+      // Reverte em caso de erro
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, active: product.active } : p));
       setActionError(err instanceof Error ? err.message : 'Erro ao atualizar status do produto.');
     }
   };
@@ -58,10 +61,13 @@ export default function AdminDashboard() {
     if (!confirmed) return;
 
     setActionError('');
+    // Optimistic update — remove da lista imediatamente
+    setProducts(prev => prev.filter(p => p.id !== product.id));
     try {
       await productService.deleteProduct(product.id);
-      await loadData();
     } catch (err) {
+      // Reverte em caso de erro
+      setProducts(prev => [...prev, product]);
       setActionError(err instanceof Error ? err.message : 'Erro ao excluir produto.');
     }
   };

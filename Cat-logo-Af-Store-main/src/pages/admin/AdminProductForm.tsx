@@ -87,7 +87,7 @@ export default function AdminProductForm() {
         await productService.createProduct(formData);
         showToast('Produto criado com sucesso!');
       }
-      setTimeout(() => navigate('/admin/dashboard'), 1500);
+      navigate('/admin/dashboard');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao salvar produto.';
       setError(message);
@@ -103,12 +103,24 @@ export default function AdminProductForm() {
     }));
   };
 
-  const fileToDataUrl = (file: File): Promise<string> =>
+  // Comprime a imagem usando Canvas antes de salvar (reduz de ~3MB para ~200KB)
+  const compressImage = (file: File, maxWidth = 1200, quality = 0.78): Promise<string> =>
     new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = () => reject(new Error('Falha ao processar arquivo.'));
-      reader.readAsDataURL(file);
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement('canvas');
+        const ratio = Math.min(1, maxWidth / img.width);
+        canvas.width = Math.round(img.width * ratio);
+        canvas.height = Math.round(img.height * ratio);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('Canvas indisponível.'));
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => reject(new Error('Falha ao processar imagem.'));
+      img.src = objectUrl;
     });
 
   const processFiles = async (files: File[]) => {
@@ -121,13 +133,14 @@ export default function AdminProductForm() {
     setError('');
     setIsUploadingImage(true);
     try {
-      const dataUrls = await Promise.all(validFiles.map(fileToDataUrl));
+      // Comprime cada imagem em paralelo antes de adicionar ao form
+      const dataUrls = await Promise.all(validFiles.map(f => compressImage(f)));
       setFormData(prev => ({
         ...prev,
         images: [...(prev.images || []), ...dataUrls],
       }));
     } catch (err) {
-      setError('Erro ao ler a imagem. Tente reduzir o tamanho do arquivo.');
+      setError('Erro ao processar imagem. Tente outra foto.');
     } finally {
       setIsUploadingImage(false);
     }

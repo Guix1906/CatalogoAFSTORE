@@ -32,6 +32,11 @@ const toProduct = (row: ProductRow): Product => {
   };
 };
 
+const normalizeCategory = (cat: string) => {
+  if (!cat) return 'leggings';
+  return cat.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+};
+
 const sanitizePayload = (product: Partial<Product>) => {
   const baseName = (product.name || '').trim();
   const slugFromName = baseName
@@ -44,7 +49,7 @@ const sanitizePayload = (product: Partial<Product>) => {
   return {
     name: (product.name || '').trim(),
     slug: (product.slug || slugFromName || `produto-${Date.now()}`).trim(),
-    category: (product.category || 'leggings') as string,
+    category: normalizeCategory(product.category as string),
     price: Number(product.price || 0),
     original_price: product.originalPrice ?? null,
     discount: product.discount ?? null,
@@ -56,7 +61,7 @@ const sanitizePayload = (product: Partial<Product>) => {
     is_best_seller: Boolean(product.isBestSeller),
     is_on_sale: Boolean(product.isOnSale),
     active: product.active ?? true,
-    gender: product.gender || 'feminino',
+    gender: normalizeCategory(product.gender || 'feminino'),
     tags: (product.tags || []).filter(Boolean),
     description: product.description || '',
   };
@@ -166,6 +171,7 @@ export const productService = {
       .single();
 
     if (error) throw error;
+    cache.clear(); // Invalida o cache
     return toProduct(data);
   },
 
@@ -179,16 +185,19 @@ export const productService = {
       .single();
 
     if (error) throw error;
+    cache.clear(); // Invalida o cache
     return toProduct(data);
   },
 
   async deleteProduct(id: string): Promise<void> {
     const { error } = await supabase.from('products').delete().eq('id', id);
     if (error) throw error;
+    cache.clear(); // Invalida o cache
   },
 
   async toggleProductActive(id: string, active: boolean): Promise<void> {
     const { error } = await supabase.from('products').update({ active }).eq('id', id);
     if (error) throw error;
+    cache.clear(); // Invalida o cache
   },
 };

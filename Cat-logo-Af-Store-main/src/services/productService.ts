@@ -62,6 +62,24 @@ const sanitizePayload = (product: Partial<Product>) => {
   };
 };
 
+// Sistema de Cache Local Leve para evitar requisições duplicadas
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+const cache = new Map<string, CacheEntry<any>>();
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutos
+
+const getCached = <T>(key: string): T | null => {
+  const entry = cache.get(key);
+  if (entry && Date.now() - entry.timestamp < CACHE_TTL) return entry.data;
+  return null;
+};
+
+const setCache = <T>(key: string, data: T) => {
+  cache.set(key, { data, timestamp: Date.now() });
+};
+
 export const productService = {
   async getProducts(): Promise<Product[]> {
     const { data, error } = await supabase
@@ -74,6 +92,10 @@ export const productService = {
   },
 
   async getActiveProducts(): Promise<Product[]> {
+    const cacheKey = 'active_products';
+    const cached = getCached<Product[]>(cacheKey);
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -81,10 +103,16 @@ export const productService = {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data || []).map(toProduct);
+    const result = (data || []).map(toProduct);
+    setCache(cacheKey, result);
+    return result;
   },
 
   async getProductById(id: string): Promise<Product | undefined> {
+    const cacheKey = `product_${id}`;
+    const cached = getCached<Product>(cacheKey);
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -92,10 +120,19 @@ export const productService = {
       .maybeSingle();
 
     if (error) throw error;
-    return data ? toProduct(data) : undefined;
+    if (data) {
+      const result = toProduct(data);
+      setCache(cacheKey, result);
+      return result;
+    }
+    return undefined;
   },
 
   async getProductsByCategory(categorySlug: string): Promise<Product[]> {
+    const cacheKey = `category_${categorySlug}`;
+    const cached = getCached<Product[]>(cacheKey);
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -104,7 +141,9 @@ export const productService = {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data || []).map(toProduct);
+    const result = (data || []).map(toProduct);
+    setCache(cacheKey, result);
+    return result;
   },
 
   async searchProducts(query: string): Promise<Product[]> {

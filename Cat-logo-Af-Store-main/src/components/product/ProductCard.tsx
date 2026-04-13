@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { Product } from '../../types';
@@ -6,26 +7,26 @@ import PriceDisplay from '../ui/PriceDisplay';
 
 interface ProductCardProps {
   product: Product;
-  key?: string | number;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
+      viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+      transition={{ duration: 0.4 }}
       onClick={() => navigate(`/produto/${product.id}`)}
-      className="group cursor-pointer bg-brand-card border border-brand-border rounded-lg overflow-hidden flex flex-col h-full"
+      className="group cursor-pointer bg-brand-card border border-brand-border rounded-lg overflow-hidden flex flex-col h-full will-change-transform"
     >
       <div className="relative aspect-[3/4] overflow-hidden">
         <img
           src={product.images[0]}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform"
           referrerPolicy="no-referrer"
         />
         
@@ -53,4 +54,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
     </motion.div>
   );
-}
+});
+
+export default ProductCard;

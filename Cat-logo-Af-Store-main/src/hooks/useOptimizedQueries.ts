@@ -124,11 +124,15 @@ export const useProductMutations = () => {
     },
   });
 
-  return {
-    createProduct: createMutation,
-    updateProduct: updateMutation,
-    deleteProduct: deleteMutation,
-    toggleActive: toggleActiveMutation,
-  };
+export const prefetchCategory = (queryClient: any, slug: string) => {
+  if (!slug) return;
+  queryClient.prefetchQuery({
+    queryKey: QUERY_KEYS.productsByCategory(slug),
+    queryFn: () => productService.getProductsByCategory(slug, 0, 8),
+    staleTime: 1000 * 60 * 5,
+  });
 };
+
+export { useOptimizedQueries };
+
 

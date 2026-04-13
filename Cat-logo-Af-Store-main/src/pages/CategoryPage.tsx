@@ -135,7 +135,7 @@ export default function CategoryPage() {
               <button
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
-                className="w-full max-w-xs py-4 flex items-center justify-center gap-2 bg-brand-card border border-brand-border rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold hover:border-brand-gold transition-all"
+                className="w-full max-w-xs py-4 flex items-center justify-center gap-2 bg-brand-card border border-brand-border rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold active:scale-95 hover:border-brand-gold transition-all"
               >
                 {isFetchingNextPage ? (
                   <div className="w-4 h-4 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
@@ -148,6 +148,7 @@ export default function CategoryPage() {
               </button>
             </div>
           )}
+
 
           {filteredProducts.length === 0 && (
             <div className="py-20 text-center space-y-6">

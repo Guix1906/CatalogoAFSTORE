@@ -201,25 +201,26 @@ export default function AdminProductForm() {
          </div>
       </div>
 
-      <header className="sticky top-0 z-50 px-6 h-20 flex items-center justify-between bg-[#0F0F0F]/80 backdrop-blur-xl border-b border-white/5">
-        <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-50 px-4 md:px-6 h-20 flex items-center justify-between bg-[#0F0F0F]/80 backdrop-blur-xl border-b border-white/5">
+        <div className="flex items-center gap-3">
           <button onClick={() => navigate('/admin/dashboard')} className="w-10 h-10 flex items-center justify-center text-[#888] hover:text-white bg-[#181818] border border-white/5 hover:border-white/20 rounded-full transition-all">
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} />
           </button>
-          <div>
-            <h1 className="text-white font-serif italic text-lg">{id ? 'Editar Produto' : 'Novo Produto'}</h1>
-            <p className="text-[9px] font-extrabold uppercase tracking-widest text-[#888]">Painel Antigravity</p>
+          <div className="min-w-0">
+            <h1 className="text-white font-serif italic text-base md:text-lg truncate">{id ? 'Editar Peça' : 'Nova Peça'}</h1>
+            <p className="text-[8px] md:text-[9px] font-extrabold uppercase tracking-widest text-brand-gold">Antigravity Admin</p>
           </div>
         </div>
         
         <button 
           onClick={handleSubmit} 
           disabled={saving}
-          className="bg-brand-gold hover:bg-brand-gold-light disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-[10px] uppercase tracking-wider px-6 py-3 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-brand-gold/10"
+          className="bg-brand-gold hover:bg-brand-gold-light disabled:opacity-50 disabled:cursor-not-allowed text-black font-black text-[9px] md:text-[10px] uppercase tracking-wider px-4 md:px-6 py-3 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-brand-gold/10"
         >
-          <Save size={16} /> {saving ? 'Salvando...' : 'Salvar Alterações'}
+          <Save size={14} className="hidden sm:block" /> {saving ? '...' : 'Salvar'}
         </button>
       </header>
+
 
       <main className="max-w-4xl mx-auto px-6 pt-10">
         <div className="grid md:grid-cols-3 gap-8">

@@ -124,6 +124,14 @@ export const useProductMutations = () => {
     },
   });
 
+  return {
+    createProduct: createMutation,
+    updateProduct: updateMutation,
+    deleteProduct: deleteMutation,
+    toggleActive: toggleActiveMutation,
+  };
+};
+
 export const prefetchCategory = (queryClient: any, slug: string) => {
   if (!slug) return;
   queryClient.prefetchQuery({
@@ -133,6 +141,5 @@ export const prefetchCategory = (queryClient: any, slug: string) => {
   });
 };
 
-export { useOptimizedQueries };
 
 

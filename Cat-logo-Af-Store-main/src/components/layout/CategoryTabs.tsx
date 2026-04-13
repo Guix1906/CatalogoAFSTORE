@@ -10,7 +10,7 @@ export default function CategoryTabs() {
 
   return (
     <div className="sticky top-16 z-40 bg-brand-bg/90 backdrop-blur-md border-b border-brand-border/50">
-      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-6 py-4 max-w-lg mx-auto">
+      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-4 py-3">
         {tabs.map((tab) => (
           <NavLink
             key={tab.slug}

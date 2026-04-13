@@ -27,64 +27,26 @@ function ScrollToTop() {
   return null;
 }
 
+// Fallback mínimo — evita layout shift com altura proporcional
+const PageFallback = () => <div className="min-h-screen" />;
+
 function AnimatedRoutes() {
   const location = useLocation();
   
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <Home />
-          </Suspense>
-        } />
-        <Route path="/categoria/:slug" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <CategoryPage />
-          </Suspense>
-        } />
-        <Route path="/produto/:id" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <ProductPage />
-          </Suspense>
-        } />
-        <Route path="/busca" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <SearchPage />
-          </Suspense>
-        } />
-        <Route path="/novidades" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <NewArrivalsPage />
-          </Suspense>
-        } />
-        <Route path="/categorias" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <CategoriesPage />
-          </Suspense>
-        } />
-        
+        <Route path="/" element={<Suspense fallback={<PageFallback />}><Home /></Suspense>} />
+        <Route path="/categoria/:slug" element={<Suspense fallback={<PageFallback />}><CategoryPage /></Suspense>} />
+        <Route path="/produto/:id" element={<Suspense fallback={<PageFallback />}><ProductPage /></Suspense>} />
+        <Route path="/busca" element={<Suspense fallback={<PageFallback />}><SearchPage /></Suspense>} />
+        <Route path="/novidades" element={<Suspense fallback={<PageFallback />}><NewArrivalsPage /></Suspense>} />
+        <Route path="/categorias" element={<Suspense fallback={<PageFallback />}><CategoriesPage /></Suspense>} />
         {/* Admin Routes */}
-        <Route path="/admin" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <AdminLogin />
-          </Suspense>
-        } />
-        <Route path="/admin/dashboard" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <AdminDashboard />
-          </Suspense>
-        } />
-        <Route path="/admin/produto/novo" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <AdminProductForm />
-          </Suspense>
-        } />
-        <Route path="/admin/produto/editar/:id" element={
-          <Suspense fallback={<div className="pb-32" />}>
-            <AdminProductForm />
-          </Suspense>
-        } />
+        <Route path="/admin" element={<Suspense fallback={<PageFallback />}><AdminLogin /></Suspense>} />
+        <Route path="/admin/dashboard" element={<Suspense fallback={<PageFallback />}><AdminDashboard /></Suspense>} />
+        <Route path="/admin/produto/novo" element={<Suspense fallback={<PageFallback />}><AdminProductForm /></Suspense>} />
+        <Route path="/admin/produto/editar/:id" element={<Suspense fallback={<PageFallback />}><AdminProductForm /></Suspense>} />
       </Routes>
     </AnimatePresence>
   );
@@ -92,7 +54,6 @@ function AnimatedRoutes() {
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Hide global loader organically after initial mounting

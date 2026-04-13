@@ -51,46 +51,34 @@ export default function HeroBanner() {
   const safeCurrent = slides.length ? current % slides.length : 0;
   const activeSlide = slides[safeCurrent];
 
+  // Carrega config e inicia timer num unico fluxo
   useEffect(() => {
     let active = true;
 
-    configService
-      .getConfig()
-      .then((config) => {
-        if (!active) return;
-        if (config.heroImageUrls?.length) {
-          setHeroImageUrls(config.heroImageUrls.slice(0, 4));
-        } else if (config.heroImageUrl) {
-          setHeroImageUrls([config.heroImageUrl]);
-        } else {
-          setHeroImageUrls([]);
-        }
-        setIsLoading(false);
-      })
-      .catch(() => {
-        if (active) {
-          setHeroImageUrls([]);
-          setIsLoading(false);
-        }
-      });
+    configService.getConfig().then((config) => {
+      if (!active) return;
+      if (config.heroImageUrls?.length) {
+        setHeroImageUrls(config.heroImageUrls.slice(0, 4));
+      } else if (config.heroImageUrl) {
+        setHeroImageUrls([config.heroImageUrl]);
+      }
+      setIsLoading(false);
+    }).catch(() => {
+      if (active) setIsLoading(false);
+    });
 
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
+  // Auto-avancar slides
   useEffect(() => {
     if (slides.length <= 1) return;
-
+    // Garantir que current nao fica fora dos limites ao trocar imagens
+    setCurrent((prev) => (prev >= slides.length ? 0 : prev));
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
-    }, 4000);
-
+    }, 4500);
     return () => clearInterval(timer);
-  }, [slides.length]);
-
-  useEffect(() => {
-    setCurrent((prev) => (prev >= slides.length ? 0 : prev));
   }, [slides.length]);
 
   if (isLoading) {

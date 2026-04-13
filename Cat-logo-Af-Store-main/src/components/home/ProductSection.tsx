@@ -12,7 +12,7 @@ interface ProductSectionProps {
 
 export default function ProductSection({ title, products, viewAllLink, layout = 'grid' }: ProductSectionProps) {
   return (
-    <section className="py-8 px-4 space-y-6">
+    <section className="py-6 px-4 space-y-5">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-serif font-bold text-brand-gold uppercase tracking-tight">{title}</h2>
         {viewAllLink && (

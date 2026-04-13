@@ -12,8 +12,13 @@ export default function AdminProductForm() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [notFound, setNotFound] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const MAX_IMAGES = 6;
+  const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
+  const ALLOWED_CATEGORIES = ['leggings', 'tops', 'conjuntos', 'masculino', 'feminino'] as const;
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
     category: 'leggings',
@@ -31,17 +36,27 @@ export default function AdminProductForm() {
 
   useEffect(() => {
     const loadProduct = async () => {
-      const { isAdmin } = await adminAuthService.isAdmin();
-      if (!isAdmin) {
-        navigate('/admin');
-        return;
-      }
+      try {
+        const { isAdmin, error: adminError } = await adminAuthService.isAdmin();
+        if (!isAdmin) {
+          setAuthError(adminError || 'Acesso negado ao painel admin.');
+          setLoading(false);
+          return;
+        }
 
-      if (id) {
-        const p = await productService.getProductById(id);
-        if (p) setFormData(p);
+        if (id) {
+          const p = await productService.getProductById(id);
+          if (p) {
+            setFormData(p);
+          } else {
+            setNotFound(true);
+          }
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar produto.');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     loadProduct();
   }, [id, navigate]);
@@ -59,6 +74,16 @@ export default function AdminProductForm() {
 
     if (!priceValue || priceValue <= 0) {
       setError('Informe um preço válido maior que zero.');
+      return;
+    }
+
+    if (!ALLOWED_CATEGORIES.includes((formData.category || '') as (typeof ALLOWED_CATEGORIES)[number])) {
+      setError('Categoria inválida.');
+      return;
+    }
+
+    if (!formData.images?.length) {
+      setError('Adicione ao menos 1 imagem do produto.');
       return;
     }
 
@@ -107,9 +132,23 @@ export default function AdminProductForm() {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
+    const currentTotal = formData.images?.length || 0;
+    if (currentTotal + files.length > MAX_IMAGES) {
+      setError(`Você pode ter no máximo ${MAX_IMAGES} imagens por produto.`);
+      e.target.value = '';
+      return;
+    }
+
     const invalidFile = files.find((file) => !file.type.startsWith('image/'));
     if (invalidFile) {
       setError('Selecione apenas arquivos de imagem.');
+      e.target.value = '';
+      return;
+    }
+
+    const oversizedFile = files.find((file) => file.size > MAX_IMAGE_SIZE);
+    if (oversizedFile) {
+      setError('Cada imagem deve ter no máximo 3MB.');
       e.target.value = '';
       return;
     }
@@ -131,7 +170,41 @@ export default function AdminProductForm() {
     }
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <PageWrapper>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  if (authError) {
+    return (
+      <PageWrapper>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
+          <p className="text-sm text-brand-text-muted">{authError}</p>
+          <button onClick={() => navigate('/admin')} className="btn-primary !px-6 !py-3 !text-[10px]">
+            Ir para login admin
+          </button>
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <PageWrapper>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
+          <p className="text-sm text-brand-text-muted">Produto não encontrado para edição.</p>
+          <button onClick={() => navigate('/admin/dashboard')} className="btn-primary !px-6 !py-3 !text-[10px]">
+            Voltar ao dashboard
+          </button>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>

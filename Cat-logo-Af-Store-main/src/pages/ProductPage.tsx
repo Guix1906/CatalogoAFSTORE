@@ -18,6 +18,9 @@ export default function ProductPage() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [pageError, setPageError] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [isDescOpen, setIsDescOpen] = useState(true);
@@ -25,22 +28,52 @@ export default function ProductPage() {
 
   useEffect(() => {
     const loadProduct = async () => {
-      if (id) {
-        const p = await productService.getProductById(id);
-        if (p) {
-          setProduct(p);
-          const related = await productService.getProductsByCategory(p.category);
-          setRelatedProducts(related.filter(item => item.id !== p.id).slice(0, 4));
+      try {
+        if (!id) {
+          setNotFound(true);
+          return;
         }
+
+        const p = await productService.getProductById(id);
+        if (!p) {
+          setNotFound(true);
+          return;
+        }
+
+        setProduct(p);
+        const related = await productService.getProductsByCategory(p.category);
+        setRelatedProducts(related.filter(item => item.id !== p.id).slice(0, 4));
+      } catch (err) {
+        setPageError(err instanceof Error ? err.message : 'Falha ao carregar produto.');
+      } finally {
+        setLoading(false);
       }
     };
     loadProduct();
   }, [id]);
 
-  if (!product) return (
+  if (loading) return (
     <div className="min-h-screen bg-brand-bg flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
     </div>
+  );
+
+  if (pageError) return (
+    <PageWrapper>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-sm text-brand-text-muted">{pageError}</p>
+        <button onClick={() => navigate('/')} className="btn-primary !px-6 !py-3 !text-[10px]">Voltar ao catálogo</button>
+      </div>
+    </PageWrapper>
+  );
+
+  if (notFound || !product) return (
+    <PageWrapper>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-sm text-brand-text-muted">Produto não encontrado.</p>
+        <button onClick={() => navigate('/')} className="btn-primary !px-6 !py-3 !text-[10px]">Ver catálogo</button>
+      </div>
+    </PageWrapper>
   );
 
   return (

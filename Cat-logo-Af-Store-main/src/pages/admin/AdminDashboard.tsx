@@ -18,25 +18,31 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   const loadData = async () => {
-    const [p, c] = await Promise.all([
-      productService.getProducts(),
-      configService.getConfig(),
-    ]);
-    setProducts(p);
-    setConfig(c);
+    try {
+      const [p, c] = await Promise.all([
+        productService.getProducts(),
+        configService.getConfig(),
+      ]);
+      setProducts(p);
+      setConfig(c);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Erro ao carregar dados do painel.');
+    }
   };
 
   useEffect(() => {
     const loadProtectedData = async () => {
-      const { isAdmin, error } = await adminAuthService.isAdmin();
-      if (!isAdmin) {
-        setAuthError(error || 'Acesso negado.');
-        setLoading(false);
-        navigate('/admin');
-        return;
-      }
+      try {
+        const { isAdmin, error } = await adminAuthService.isAdmin();
+        if (!isAdmin) {
+          setAuthError(error || 'Acesso negado.');
+          return;
+        }
 
-      await loadData();
+        await loadData();
+      } catch (err) {
+        setAuthError(err instanceof Error ? err.message : 'Falha ao validar acesso.');
+      }
       setLoading(false);
     };
 
@@ -152,8 +158,28 @@ export default function AdminDashboard() {
     navigate('/admin');
   };
 
-  if (loading) return null;
-  if (authError) return null;
+  if (loading) {
+    return (
+      <PageWrapper>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  if (authError) {
+    return (
+      <PageWrapper>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
+          <p className="text-sm text-brand-text-muted">{authError}</p>
+          <button onClick={() => navigate('/admin')} className="btn-primary !px-6 !py-3 !text-[10px]">
+            Ir para login admin
+          </button>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>

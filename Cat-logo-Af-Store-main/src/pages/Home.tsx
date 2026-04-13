@@ -4,11 +4,15 @@ import HeroBanner from '../components/home/HeroBanner';
 import CategoryTabs from '../components/layout/CategoryTabs';
 import ProductSection from '../components/home/ProductSection';
 import WhatsAppBanner from '../components/home/WhatsAppBanner';
-import { useActiveProducts } from '../hooks/useOptimizedQueries';
+import { useActiveProducts, QUERY_KEYS } from '../hooks/useOptimizedQueries';
 import { SectionSkeleton, HeroSkeleton } from '../components/layout/Skeletons';
+import { useQueryClient } from '@tanstack/react-query';
+import { productService } from '../services/productService';
 
 export default function Home() {
-  const { data: products, isLoading } = useActiveProducts(0, 50);
+  const queryClient = useQueryClient();
+  // Carrega apenas 20 para ter conteúdo suficiente mas sem pesar
+  const { data: products, isLoading } = useActiveProducts(0, 20);
 
   const sections = useMemo(() => {
     if (!products) return { bestSellers: [], newArrivals: [], onSale: [] };
@@ -20,10 +24,21 @@ export default function Home() {
     };
   }, [products]);
 
+  // Prefetch de categorias comuns para navegação ultra-rápida (Native Feel)
+  const handlePrefetch = (slug: string) => {
+    queryClient.prefetchQuery({
+      queryKey: QUERY_KEYS.productsByCategory(slug),
+      queryFn: () => productService.getProductsByCategory(slug, 0, 8),
+      staleTime: 1000 * 60 * 5,
+    });
+  };
+
   return (
     <PageWrapper>
       <div className="pt-16"> {/* Spacer for fixed header */}
-        <CategoryTabs />
+        <div onMouseEnter={() => handlePrefetch('leggings')}>
+          <CategoryTabs />
+        </div>
         
         {isLoading ? (
           <>
@@ -68,4 +83,5 @@ export default function Home() {
     </PageWrapper>
   );
 }
+
 

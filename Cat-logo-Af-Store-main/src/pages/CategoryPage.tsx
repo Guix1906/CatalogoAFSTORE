@@ -3,8 +3,8 @@ import { useMemo, useState } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import ProductCard from '../components/product/ProductCard';
 import { CATEGORIES } from '../constants';
-import { useActiveProducts, useProductsByCategory } from '../hooks/useOptimizedQueries';
-import { ChevronLeft, SlidersHorizontal } from 'lucide-react';
+import { useInfiniteActiveProducts, useInfiniteProductsByCategory } from '../hooks/useOptimizedQueries';
+import { ChevronLeft, SlidersHorizontal, Plus } from 'lucide-react';
 import { SectionSkeleton } from '../components/layout/Skeletons';
 
 export default function CategoryPage() {
@@ -13,18 +13,37 @@ export default function CategoryPage() {
   const [sortBy, setSortBy] = useState('relevance');
   const [selectedSize, setSelectedSize] = useState('Todos');
 
-  const { data: activeProducts, isLoading: isLoadingActive } = useActiveProducts(0, 100);
-  const { data: catProducts, isLoading: isLoadingCat } = useProductsByCategory(
-    slug !== 'ofertas' ? slug || '' : '',
-    0,
-    100
-  );
+  const { 
+    data: activeData, 
+    isLoading: isLoadingActive, 
+    fetchNextPage: fetchNextActive, 
+    hasNextPage: hasNextActive,
+    isFetchingNextPage: isFetchingActive 
+  } = useInfiniteActiveProducts(8);
+
+  const { 
+    data: catData, 
+    isLoading: isLoadingCat, 
+    fetchNextPage: fetchNextCat, 
+    hasNextPage: hasNextCat,
+    isFetchingNextPage: isFetchingCat 
+  } = useInfiniteProductsByCategory(slug !== 'ofertas' ? slug || '' : '', 8);
 
   const isLoading = slug === 'ofertas' ? isLoadingActive : isLoadingCat;
+  const isFetchingNextPage = slug === 'ofertas' ? isFetchingActive : isFetchingCat;
+  const hasNextPage = slug === 'ofertas' ? hasNextActive : hasNextCat;
+  const fetchNextPage = slug === 'ofertas' ? fetchNextActive : fetchNextCat;
+
   const products = useMemo(() => {
-    if (slug === 'ofertas') return (activeProducts || []).filter(p => p.isOnSale);
-    return catProducts || [];
-  }, [slug, activeProducts, catProducts]);
+    const data = slug === 'ofertas' ? activeData : catData;
+    if (!data) return [];
+    
+    let allProducts = data.pages.flat();
+    if (slug === 'ofertas') {
+      allProducts = allProducts.filter(p => p.isOnSale);
+    }
+    return allProducts;
+  }, [slug, activeData, catData]);
 
   const category = CATEGORIES.find(c => c.slug === slug);
 
@@ -58,7 +77,6 @@ export default function CategoryPage() {
           </div>
         </div>
 
-        {/* Technical Filter Chips */}
         <div className="px-4 pb-5 flex gap-2 overflow-x-auto scrollbar-hide">
           {sizes.map(size => (
             <button
@@ -67,8 +85,8 @@ export default function CategoryPage() {
               className={`
                 px-5 py-2 rounded-full text-[9px] font-sans font-extrabold uppercase tracking-[0.2em] border transition-all whitespace-nowrap
                 ${selectedSize === size 
-                  ? 'bg-brand-gold border-brand-gold text-black shadow-lg shadow-brand-gold/20' 
-                  : 'bg-brand-card/50 border-brand-border/50 text-brand-text-muted hover:border-brand-gold/50'}
+                  ? 'bg-brand-gold border-brand-gold text-black shadow-sm' 
+                  : 'bg-brand-card/50 border-brand-border/50 text-brand-text-muted'}
               `}
             >
               {size === 'Todos' ? 'All Sizes' : `Size: ${size}`}
@@ -79,7 +97,7 @@ export default function CategoryPage() {
 
       {isLoading ? (
         <div className="-mt-12">
-          <SectionSkeleton titleWidth="w-0" count={12} />
+          <SectionSkeleton titleWidth="w-0" count={8} />
         </div>
       ) : (
         <>
@@ -98,26 +116,42 @@ export default function CategoryPage() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-transparent focus:outline-none text-[9px] font-sans font-extrabold uppercase tracking-[0.1em] text-brand-text cursor-pointer"
               >
-                <option value="relevance">Sort By: Featured</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="newest">Arrival Date</option>
+                <option value="relevance">Featured</option>
+                <option value="price-asc">Price: Low</option>
+                <option value="price-desc">Price: High</option>
+                <option value="newest">Newest</option>
               </select>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-6 pb-20">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 pb-12">
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
 
+          {hasNextPage && (
+            <div className="flex justify-center pb-20 px-4">
+              <button
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className="w-full max-w-xs py-4 flex items-center justify-center gap-2 bg-brand-card border border-brand-border rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold hover:border-brand-gold transition-all"
+              >
+                {isFetchingNextPage ? (
+                  <div className="w-4 h-4 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <Plus size={14} />
+                    Carregar Mais Itens
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
           {filteredProducts.length === 0 && (
             <div className="py-20 text-center space-y-6">
-              <div className="bg-brand-card/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-border/50">
-                 <SlidersHorizontal className="text-brand-text-muted opacity-30" size={24} />
-              </div>
-              <p className="text-sm font-sans text-brand-text-muted tracking-wide">Busca sem resultados nesta categoria.</p>
+              <p className="text-sm font-sans text-brand-text-muted tracking-wide">Sem resultados nesta categoria.</p>
               <button 
                 onClick={() => navigate('/')}
                 className="btn-primary !px-8"
@@ -131,4 +165,5 @@ export default function CategoryPage() {
     </PageWrapper>
   );
 }
+
 

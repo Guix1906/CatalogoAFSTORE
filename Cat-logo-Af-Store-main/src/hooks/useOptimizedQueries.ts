@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { productService } from '../services/productService';
 import { configService } from '../services/configService';
 import { Product } from '../types';
@@ -13,22 +13,49 @@ export const QUERY_KEYS = {
   search: (query: string) => ['products', 'search', query] as const,
 };
 
+const DEFAULT_PAGE_SIZE = 8;
+
 // Hooks
-export const useProducts = (page = 0, limit = 50) => {
+export const useProducts = (page = 0, limit = 20) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.products, { page, limit }],
     queryFn: () => productService.getProducts(page, limit),
   });
 };
 
-export const useActiveProducts = (page = 0, limit = 50) => {
+export const useInfiniteActiveProducts = (limit = DEFAULT_PAGE_SIZE) => {
+  return useInfiniteQuery({
+    queryKey: [...QUERY_KEYS.activeProducts, { limit }],
+    queryFn: ({ pageParam = 0 }) => productService.getActiveProducts(pageParam, limit),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === limit ? allPages.length : undefined;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useInfiniteProductsByCategory = (category: string, limit = DEFAULT_PAGE_SIZE) => {
+  return useInfiniteQuery({
+    queryKey: QUERY_KEYS.productsByCategory(category),
+    queryFn: ({ pageParam = 0 }) => productService.getProductsByCategory(category, pageParam, limit),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === limit ? allPages.length : undefined;
+    },
+    enabled: !!category,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useActiveProducts = (page = 0, limit = DEFAULT_PAGE_SIZE) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.activeProducts, { page, limit }],
     queryFn: () => productService.getActiveProducts(page, limit),
   });
 };
 
-export const useProductsByCategory = (category: string, page = 0, limit = 50) => {
+export const useProductsByCategory = (category: string, page = 0, limit = DEFAULT_PAGE_SIZE) => {
   return useQuery({
     queryKey: QUERY_KEYS.productsByCategory(category),
     queryFn: () => productService.getProductsByCategory(category, page, limit),
@@ -41,6 +68,7 @@ export const useProduct = (id: string) => {
     queryKey: QUERY_KEYS.product(id),
     queryFn: () => productService.getProductById(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 10, // Cache product details longer
   });
 };
 
@@ -103,3 +131,4 @@ export const useProductMutations = () => {
     toggleActive: toggleActiveMutation,
   };
 };
+

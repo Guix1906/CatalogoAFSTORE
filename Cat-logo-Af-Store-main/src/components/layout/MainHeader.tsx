@@ -1,4 +1,4 @@
-import { Search, Menu, Shield } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function MainHeader() {
@@ -18,21 +18,12 @@ export default function MainHeader() {
         />
       </Link>
 
-      <div className="flex items-center gap-1">
-        <Link
-          to="/admin"
-          aria-label="Entrar no painel admin"
-          className="p-2 text-brand-text-muted hover:text-brand-gold transition-colors"
-        >
-          <Shield size={18} />
-        </Link>
-        <button 
-          onClick={() => navigate('/busca')}
-          className="p-2 text-brand-text-muted"
-        >
-          <Search size={20} />
-        </button>
-      </div>
+      <button 
+        onClick={() => navigate('/busca')}
+        className="p-2 text-brand-text-muted"
+      >
+        <Search size={20} />
+      </button>
     </header>
   );
 }

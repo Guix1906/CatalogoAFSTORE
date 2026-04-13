@@ -5,6 +5,7 @@ export default function CategoryTabs() {
   const tabs = [
     { name: 'Todos', slug: '' },
     ...CATEGORIES,
+    { name: 'Promoções', slug: 'ofertas' }
   ];
 
   return (

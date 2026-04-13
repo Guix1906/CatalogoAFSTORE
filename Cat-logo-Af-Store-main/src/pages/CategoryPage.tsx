@@ -11,41 +11,24 @@ export default function CategoryPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [pageError, setPageError] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
   const [selectedSize, setSelectedSize] = useState('Todos');
 
   const category = CATEGORIES.find(c => c.slug === slug);
-  const isOffersPage = slug === 'ofertas';
-  const isInvalidCategory = Boolean(slug) && !category && !isOffersPage;
 
   useEffect(() => {
     const loadProducts = async () => {
-      try {
-        let result: Product[] = [];
-
-        if (isInvalidCategory) {
-          setProducts([]);
-          return;
-        }
-
-        if (slug === 'ofertas') {
-          const all = await productService.getActiveProducts();
-          result = all.filter(p => p.isOnSale);
-        } else if (slug) {
-          result = await productService.getProductsByCategory(slug);
-        }
-        setProducts(result);
-      } catch (err) {
-        setPageError(err instanceof Error ? err.message : 'Falha ao carregar categoria.');
-      } finally {
-        setLoading(false);
+      let result: Product[] = [];
+      if (slug === 'ofertas') {
+        const all = await productService.getActiveProducts();
+        result = all.filter(p => p.isOnSale);
+      } else if (slug) {
+        result = await productService.getProductsByCategory(slug);
       }
+      setProducts(result);
     };
-
     loadProducts();
-  }, [slug, isInvalidCategory]);
+  }, [slug]);
   
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -59,38 +42,6 @@ export default function CategoryPage() {
   }, [products, sortBy, selectedSize]);
 
   const sizes = ['Todos', 'P', 'M', 'G', 'GG'];
-
-  if (loading) {
-    return (
-      <PageWrapper>
-        <div className="min-h-[60vh] flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
-        </div>
-      </PageWrapper>
-    );
-  }
-
-  if (pageError) {
-    return (
-      <PageWrapper>
-        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
-          <p className="text-sm text-brand-text-muted">{pageError}</p>
-          <button onClick={() => navigate('/')} className="btn-primary !px-6 !py-3 !text-[10px]">Voltar ao catálogo</button>
-        </div>
-      </PageWrapper>
-    );
-  }
-
-  if (isInvalidCategory) {
-    return (
-      <PageWrapper>
-        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6 text-center">
-          <p className="text-sm text-brand-text-muted">Categoria não encontrada.</p>
-          <button onClick={() => navigate('/categorias')} className="btn-primary !px-6 !py-3 !text-[10px]">Ver categorias</button>
-        </div>
-      </PageWrapper>
-    );
-  }
 
   return (
     <PageWrapper>

@@ -37,11 +37,28 @@ export default function ProductPage() {
     loadProduct();
   }, [id]);
 
-  if (!product) return (
-    <div className="min-h-screen bg-brand-bg flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
+  if (!product) {
+    return (
+      <PageWrapper>
+        <div className="sticky top-0 z-50 px-4 h-20 flex items-center justify-between bg-brand-bg/90 backdrop-blur-xl border-b border-brand-border/50">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center text-brand-text bg-brand-card/50 border border-brand-border rounded-full">
+            <ChevronLeft size={20} />
+          </button>
+          <div className="w-32 h-4 bg-brand-card/50 rounded animate-pulse" />
+          <div className="w-10" />
+        </div>
+        <div className="aspect-[4/5] bg-brand-card/30 animate-pulse w-full max-w-lg mx-auto" />
+        <div className="p-8 space-y-10">
+          <div className="space-y-4">
+            <div className="h-4 w-24 bg-brand-card/50 rounded animate-pulse" />
+            <div className="h-8 w-3/4 bg-brand-card/50 rounded animate-pulse" />
+            <div className="h-6 w-1/3 bg-brand-card/50 rounded animate-pulse" />
+          </div>
+          <div className="h-24 bg-brand-card/30 rounded-3xl animate-pulse" />
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>

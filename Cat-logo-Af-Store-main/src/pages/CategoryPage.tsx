@@ -13,21 +13,32 @@ export default function CategoryPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [sortBy, setSortBy] = useState('relevance');
   const [selectedSize, setSelectedSize] = useState('Todos');
+  const [isLoading, setIsLoading] = useState(true);
 
   const category = CATEGORIES.find(c => c.slug === slug);
 
   useEffect(() => {
+    let active = true;
     const loadProducts = async () => {
+      setIsLoading(true);
       let result: Product[] = [];
-      if (slug === 'ofertas') {
-        const all = await productService.getActiveProducts();
-        result = all.filter(p => p.isOnSale);
-      } else if (slug) {
-        result = await productService.getProductsByCategory(slug);
+      try {
+        if (slug === 'ofertas') {
+          const all = await productService.getActiveProducts();
+          result = all.filter(p => p.isOnSale);
+        } else if (slug) {
+          result = await productService.getProductsByCategory(slug);
+        }
+      } finally {
+        if (active) {
+          setProducts(result);
+          setIsLoading(false);
+        }
       }
-      setProducts(result);
     };
     loadProducts();
+    
+    return () => { active = false; };
   }, [slug]);
   
   const filteredProducts = useMemo(() => {
@@ -102,25 +113,39 @@ export default function CategoryPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-10 px-4 pb-20">
-        {filteredProducts.map(product => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-
-      {filteredProducts.length === 0 && (
-        <div className="py-32 text-center space-y-6">
-          <div className="bg-brand-card/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-border/50">
-             <SlidersHorizontal className="text-brand-text-muted opacity-30" size={24} />
-          </div>
-          <p className="text-sm font-sans text-brand-text-muted tracking-wide">Busca sem resultados nesta categoria.</p>
-          <button 
-            onClick={() => navigate('/')}
-            className="btn-primary !px-8"
-          >
-            Ver Catálogo Geral
-          </button>
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 px-4 pb-20">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="space-y-3">
+              <div className="aspect-[3/4] bg-brand-card/30 rounded-2xl border border-brand-border/30 animate-pulse" />
+              <div className="h-4 w-2/3 bg-brand-card/40 rounded animate-pulse" />
+              <div className="h-3 w-1/3 bg-brand-card/20 rounded animate-pulse" />
+            </div>
+          ))}
         </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-10 px-4 pb-20">
+            {filteredProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          {filteredProducts.length === 0 && (
+            <div className="py-20 text-center space-y-6">
+              <div className="bg-brand-card/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-border/50">
+                 <SlidersHorizontal className="text-brand-text-muted opacity-30" size={24} />
+              </div>
+              <p className="text-sm font-sans text-brand-text-muted tracking-wide">Busca sem resultados nesta categoria.</p>
+              <button 
+                onClick={() => navigate('/')}
+                className="btn-primary !px-8"
+              >
+                Ver Catálogo Geral
+              </button>
+            </div>
+          )}
+        </>
       )}
     </PageWrapper>
   );

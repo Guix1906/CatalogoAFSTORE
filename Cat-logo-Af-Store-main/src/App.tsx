@@ -31,30 +31,62 @@ function AnimatedRoutes() {
   const location = useLocation();
   
   return (
-    <Suspense fallback={
-      <div className="fixed inset-0 top-16 pb-16 pt-12 flex items-center justify-center bg-brand-bg z-30">
-        <div className="w-8 h-8 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin" />
-      </div>
-    }>
-      <AnimatePresence mode="wait">
-        <div key={location.pathname}>
-          <Routes location={location}>
-            <Route path="/" element={<Home />} />
-            <Route path="/categoria/:slug" element={<CategoryPage />} />
-            <Route path="/produto/:id" element={<ProductPage />} />
-            <Route path="/busca" element={<SearchPage />} />
-            <Route path="/novidades" element={<NewArrivalsPage />} />
-            <Route path="/categorias" element={<CategoriesPage />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/produto/novo" element={<AdminProductForm />} />
-            <Route path="/admin/produto/editar/:id" element={<AdminProductForm />} />
-          </Routes>
-        </div>
-      </AnimatePresence>
-    </Suspense>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <Home />
+          </Suspense>
+        } />
+        <Route path="/categoria/:slug" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <CategoryPage />
+          </Suspense>
+        } />
+        <Route path="/produto/:id" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <ProductPage />
+          </Suspense>
+        } />
+        <Route path="/busca" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <SearchPage />
+          </Suspense>
+        } />
+        <Route path="/novidades" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <NewArrivalsPage />
+          </Suspense>
+        } />
+        <Route path="/categorias" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <CategoriesPage />
+          </Suspense>
+        } />
+        
+        {/* Admin Routes */}
+        <Route path="/admin" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <AdminLogin />
+          </Suspense>
+        } />
+        <Route path="/admin/dashboard" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <AdminDashboard />
+          </Suspense>
+        } />
+        <Route path="/admin/produto/novo" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <AdminProductForm />
+          </Suspense>
+        } />
+        <Route path="/admin/produto/editar/:id" element={
+          <Suspense fallback={<div className="pb-32" />}>
+            <AdminProductForm />
+          </Suspense>
+        } />
+      </Routes>
+    </AnimatePresence>
   );
 }
 

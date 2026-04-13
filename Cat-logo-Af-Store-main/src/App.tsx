@@ -34,7 +34,7 @@ function AnimatedRoutes() {
   const location = useLocation();
   
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Suspense fallback={<PageFallback />}><Home /></Suspense>} />
         <Route path="/categoria/:slug" element={<Suspense fallback={<PageFallback />}><CategoryPage /></Suspense>} />
@@ -56,15 +56,27 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Hide global loader organically after initial mounting
-    const loader = document.getElementById('global-loader');
-    if (loader) {
-      // Pequeno timeout para dar tempo da interface estar 100% pronta e componentes de suspense montarem
-      const timeout = setTimeout(() => {
-        loader.classList.add('loader-hidden');
-      }, 300);
-      return () => clearTimeout(timeout);
+    // Garante que o loader suma mesmo se houver erro ou delay no mount
+    const hideLoader = () => {
+      const loader = document.getElementById('global-loader');
+      if (loader) loader.classList.add('loader-hidden');
+    };
+
+    // Tenta esconder após 300ms do mount do React
+    const timeout = setTimeout(hideLoader, 300);
+
+    // Como segurança extra para iPhones Pro Max e Safari: 
+    // Garante que se o window já carregou, o loader morre
+    if (document.readyState === 'complete') {
+        hideLoader();
+    } else {
+        window.addEventListener('load', hideLoader);
     }
+
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('load', hideLoader);
+    };
   }, []);
 
   // We check if we are in an admin route to hide common layout elements

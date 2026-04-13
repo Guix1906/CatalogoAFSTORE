@@ -9,7 +9,7 @@ export default function Header({ onMenuOpen }: HeaderProps) {
   const navigate = useNavigate();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-brand-bg/95 border-b border-brand-border/30 px-6 h-16 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-brand-bg/95 backdrop-blur-md border-b border-brand-border/30 px-6 pt-[env(safe-area-inset-top)] min-h-[calc(4rem+env(safe-area-inset-top))] flex items-center justify-between transition-all duration-300">
       <button 
         onClick={onMenuOpen}
         className="p-2 -ml-2 text-brand-text-muted hover:text-brand-gold transition-colors"

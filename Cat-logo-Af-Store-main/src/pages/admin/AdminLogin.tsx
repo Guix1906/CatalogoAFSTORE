@@ -54,6 +54,41 @@ export default function AdminLogin() {
     }
   };
 
+  const handleToggleRegisterMode = async () => {
+    setError('');
+    setMessage('');
+
+    if (isRegisterMode) {
+      setIsRegisterMode(false);
+      return;
+    }
+
+    const accessPassword = window.prompt('Digite a senha de liberação para criar novo acesso:');
+    if (!accessPassword?.trim()) return;
+
+    setLoading(true);
+
+    try {
+      const { data, error: verifyError } = await supabase.functions.invoke('verify-admin-access-password', {
+        body: { password: accessPassword.trim() },
+      });
+
+      if (verifyError) throw verifyError;
+
+      if (!data?.valid) {
+        setError('Senha de liberação inválida.');
+        return;
+      }
+
+      setIsRegisterMode(true);
+      setMessage('Liberação confirmada. Agora você pode criar um novo acesso.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível validar a senha de liberação.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   React.useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -123,11 +158,8 @@ export default function AdminLogin() {
             <div className="flex flex-col gap-4 pt-4 border-t border-brand-border/50">
               <button
                 type="button"
-                onClick={() => {
-                  setIsRegisterMode(!isRegisterMode);
-                  setError('');
-                  setMessage('');
-                }}
+                onClick={handleToggleRegisterMode}
+                disabled={loading}
                 className="text-[9px] font-sans font-extrabold uppercase tracking-[0.2em] text-brand-text-muted hover:text-brand-gold transition-colors"
               >
                 {isRegisterMode ? 'Voltar para Login' : 'Solicitar Novo Acesso'}

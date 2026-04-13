@@ -122,9 +122,9 @@ export default function HeroBanner() {
           
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-16 px-6 text-center">
               <motion.h2 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
+                initial={{ y: 15, opacity: 0, filter: 'blur(4px)' }}
+                animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="font-banner-display text-4xl md:text-6xl font-bold text-brand-text mb-2 leading-tight normal-case"
               >
                 {activeSlide.title.includes(' — ') ? (
@@ -139,19 +139,19 @@ export default function HeroBanner() {
                 )}
               </motion.h2>
               <motion.p 
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 15, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
+                transition={{ duration: 0.8, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 className="font-banner-support text-brand-text-muted text-[10px] md:text-xs font-normal uppercase tracking-[0.2em] mb-8"
               >
                  {activeSlide.subtitle}
               </motion.p>
               <motion.button
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
+                initial={{ y: 15, opacity: 0, scale: 0.95 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                  onClick={() => navigate(activeSlide.link)}
-                className="btn-primary flex items-center justify-center gap-2 group"
+                className="btn-primary flex items-center justify-center gap-2 group will-change-transform"
               >
                 Ver Coleção 
                 <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />

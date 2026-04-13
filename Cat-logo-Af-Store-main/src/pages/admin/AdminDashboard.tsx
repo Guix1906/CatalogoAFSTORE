@@ -147,6 +147,29 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleRemoveImage = async (indexToRemove: number) => {
+    if (!config) return;
+    const confirmed = window.confirm('Deseja remover esta imagem do banner?');
+    if (!confirmed) return;
+
+    try {
+      const newUrls = (config.heroImageUrls || []).filter((_, i) => i !== indexToRemove);
+      const firstUrl = newUrls.length > 0 ? newUrls[0] : '';
+      
+      await configService.updateConfig({
+        whatsappNumber: config.whatsappNumber,
+        whatsappMessage: config.whatsappMessage,
+        heroImageUrl: firstUrl,
+        heroImageUrls: newUrls,
+      });
+
+      await loadData();
+      setActionError('');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Erro ao remover imagem.');
+    }
+  };
+
   const handleLogout = async () => {
     await adminAuthService.signOut();
     navigate('/admin');
@@ -157,75 +180,83 @@ export default function AdminDashboard() {
 
   return (
     <PageWrapper>
-      <div className="p-6 space-y-8">
+      <div className="px-6 pt-12 pb-24 space-y-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h1 className="text-3xl font-serif italic text-brand-gold">Painel Admin</h1>
-            <p className="text-[9px] font-sans font-extrabold text-brand-text-muted uppercase tracking-[0.2em]">Gestão da Antigravity</p>
+            <h1 className="text-3xl font-serif italic text-brand-text">Painel Admin</h1>
+            <p className="text-[9px] font-sans font-extrabold text-brand-text-muted/60 uppercase tracking-[0.2em]">Gestão da Antigravity</p>
           </div>
           <button
             onClick={handleLogout}
-            className="p-2 text-brand-text-muted hover:text-brand-gold-light transition-colors"
+            className="p-3 bg-brand-card/50 rounded-full text-brand-text-muted hover:text-brand-gold hover:bg-brand-card transition-colors"
+            title="Sair do Modo Admin"
           >
-            <LogOut size={20} />
+            <LogOut size={18} />
           </button>
         </div>
 
         {/* Config Section */}
-        <section className="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4 shadow-xl">
-          <div className="flex items-center gap-2 text-brand-gold">
-            <Settings size={18} />
+        <section className="bg-[#121212] border border-brand-border/30 rounded-3xl p-7 space-y-6 shadow-2xl">
+          <div className="flex items-center gap-2 text-brand-text">
+            <Settings size={18} className="text-brand-gold" />
             <h2 className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em]">Configurações Gerais</h2>
           </div>
-          <div className="grid gap-4">
-            <div className="space-y-1">
-              <span className="text-[9px] font-sans font-bold text-brand-text-muted uppercase tracking-[0.2em]">WhatsApp de Vendas</span>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{config?.whatsappNumber}</span>
+          <div className="grid gap-6">
+            <div className="space-y-2">
+              <span className="text-[8px] font-sans font-bold text-brand-text-muted/50 uppercase tracking-[0.3em]">WhatsApp de Vendas</span>
+              <div className="flex items-center justify-between bg-brand-bg rounded-xl px-4 py-3 border border-brand-border/30">
+                <span className="text-sm font-medium tracking-wider text-brand-text">{config?.whatsappNumber}</span>
                 <button
                   onClick={handleEditWhatsApp}
-                  className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.1em]"
+                  className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.1em] hover:text-brand-gold-light"
                 >
                   Editar
                 </button>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <span className="text-[9px] font-sans font-bold text-brand-text-muted uppercase tracking-[0.2em]">Imagens do Banner Inicial (até 4)</span>
-              <div className="space-y-3">
-                <div className="grid grid-cols-4 gap-2">
-                  {(config?.heroImageUrls?.length ? config.heroImageUrls : config?.heroImageUrl ? [config.heroImageUrl] : []).map((url, index) => (
-                    <div key={`${url}-${index}`} className="w-full h-16 rounded-lg overflow-hidden bg-brand-bg border border-brand-border">
-                      <img
-                        src={url}
-                        alt={`Banner ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+            <div className="space-y-3">
+              <span className="text-[8px] font-sans font-bold text-brand-text-muted/50 uppercase tracking-[0.3em]">Imagens do Banner Inicial (Até 4)</span>
+              
+              <div className="flex flex-wrap gap-4">
+                {(config?.heroImageUrls?.length ? config.heroImageUrls : config?.heroImageUrl ? [config.heroImageUrl] : []).map((url, index) => (
+                  <div key={`${url}-${index}`} className="relative w-28 h-16 rounded-xl overflow-hidden bg-brand-bg border border-brand-border/30 group">
+                    <img
+                      src={url}
+                      alt={`Banner ${index + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button 
+                        onClick={() => handleRemoveImage(index)}
+                        className="p-2 text-white hover:text-red-400 transition-colors"
+                        title="Remover"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
-                  ))}
-                  {Array.from({ length: Math.max(0, 4 - (config?.heroImageUrls?.length ?? (config?.heroImageUrl ? 1 : 0))) }).map((_, index) => (
-                    <div key={`empty-${index}`} className="w-full h-16 rounded-lg border border-brand-border bg-brand-bg/40 flex items-center justify-center text-[10px] text-brand-text-muted uppercase tracking-widest">
-                      Vazio
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  onClick={handleSelectHeroImage}
-                  className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.1em]"
-                >
-                  Adicionar Imagens
-                </button>
-                <input
-                  ref={heroImageInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleHeroImageChange}
-                  className="hidden"
-                />
+                  </div>
+                ))}
+                
+                {Math.max(0, 4 - (config?.heroImageUrls?.length ?? (config?.heroImageUrl ? 1 : 0))) > 0 && (
+                  <button
+                    onClick={handleSelectHeroImage}
+                    className="w-28 h-16 rounded-xl border border-dashed border-brand-border/50 bg-brand-bg/20 flex flex-col items-center justify-center gap-1 text-brand-text-muted hover:text-brand-gold hover:border-brand-gold/50 transition-colors"
+                    title="Adicionar imagem"
+                  >
+                    <Plus size={16} />
+                  </button>
+                )}
               </div>
+
+              <input
+                ref={heroImageInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleHeroImageChange}
+                className="hidden"
+              />
             </div>
           </div>
         </section>
@@ -235,24 +266,24 @@ export default function AdminDashboard() {
         {/* Products Section */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-brand-gold">
-              <h2 className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em]">Produtos ({products.length})</h2>
+            <div className="flex items-center gap-2 text-brand-text">
+              <h2 className="text-[11px] font-sans font-extrabold uppercase tracking-[0.2em]">Produtos Cadastrados ({products.length})</h2>
             </div>
             <button
               onClick={() => navigate('/admin/produto/novo')}
-              className="btn-primary flex items-center gap-2 !px-4 !py-2 !text-[9px]"
+              className="btn-primary flex items-center gap-2 !px-5 !py-2.5 !text-[10px]"
             >
               <Plus size={14} /> Novo Produto
             </button>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             {products.map((product) => (
               <div
                 key={product.id}
-                className={`bg-brand-card border rounded-2xl p-4 flex gap-4 transition-colors ${product.active ? 'border-brand-border' : 'border-red-900/30 opacity-60'}`}
+                className={`bg-[#131313] border shadow-lg rounded-3xl p-5 flex gap-5 transition-all duration-300 ${product.active ? 'border-brand-border/30 hover:border-brand-border/60' : 'border-red-900/20 opacity-70 grayscale-[20%]'}`}
               >
-                <div className="w-20 h-24 rounded-lg overflow-hidden bg-brand-bg relative">
+                <div className="w-24 h-28 rounded-xl overflow-hidden bg-brand-bg relative flex-shrink-0">
                   <img
                     src={product.images[0]}
                     alt={product.name}
@@ -261,44 +292,49 @@ export default function AdminDashboard() {
                   />
                   {!product.active && (
                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                      <span className="text-[8px] font-bold uppercase text-white">Inativo</span>
+                      <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#FF5555]">Inativo</span>
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1 flex flex-col justify-between py-1">
                   <div>
-                    <h3 className="text-sm font-bold text-brand-text line-clamp-1">{product.name}</h3>
-                    <p className="text-[10px] text-brand-text-muted uppercase tracking-widest">{product.category}</p>
-                    <PriceDisplay price={product.price} className="mt-1" />
+                    <h3 className="text-sm font-bold text-white line-clamp-1">{product.name}</h3>
+                    <p className="text-[10px] text-brand-text-muted/70 uppercase tracking-[0.2em] mt-0.5 mb-2">{product.category}</p>
+                    <PriceDisplay price={product.price} />
                   </div>
 
-                  <div className="flex items-center justify-end gap-3">
+                  <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => handleToggleProduct(product)}
-                      className={`p-2 rounded-full transition-colors ${product.active ? 'text-brand-whatsapp hover:bg-brand-whatsapp/10' : 'text-brand-text-muted hover:bg-brand-text-muted/10'}`}
-                      title={product.active ? 'Desativar' : 'Ativar'}
+                      className={`p-2.5 rounded-full transition-colors font-bold ${
+                        product.active 
+                          ? 'text-[#4CAF50] hover:bg-[#4CAF50]/10' 
+                          : 'text-[#FF5555] hover:bg-[#FF5555]/10'
+                      }`}
+                      title={product.active ? "Desativar da Vitrine" : "Ativar na Vitrine"}
                     >
                       <Power size={16} />
                     </button>
+                    <div className="w-px h-4 bg-brand-border/50 mx-1" />
                     <button
                       onClick={() => navigate(`/admin/produto/editar/${product.id}`)}
-                      className="p-2 text-brand-text-muted hover:text-brand-gold transition-colors"
-                      title="Editar"
+                      className="p-2.5 text-brand-text-muted hover:text-white transition-colors"
+                      title="Editar informações do produto"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(product)}
-                      className="p-2 text-brand-text-muted hover:text-brand-gold-light transition-colors"
-                      title="Excluir"
+                      className="p-2.5 text-brand-text-muted hover:text-red-400 transition-colors"
+                      title="Excluir produto permanentemente"
                     >
                       <Trash2 size={16} />
                     </button>
                     <button
                       onClick={() => navigate(`/produto/${product.id}`)}
-                      className="p-2 text-brand-text-muted hover:text-brand-text transition-colors"
-                      title="Ver no Catálogo"
+                      className="p-2.5 text-brand-text-muted hover:text-brand-gold transition-colors"
+                      title="Testar visualização na loja"
                     >
                       <ExternalLink size={16} />
                     </button>
@@ -308,8 +344,11 @@ export default function AdminDashboard() {
             ))}
 
             {products.length === 0 && (
-              <div className="bg-brand-card border border-brand-border rounded-2xl p-6 text-center">
-                <p className="text-sm text-brand-text-muted">Nenhum produto no banco ainda.</p>
+              <div className="bg-[#121212] border border-brand-border/30 rounded-3xl p-10 text-center flex flex-col items-center justify-center space-y-4">
+                <div className="w-16 h-16 bg-brand-card/50 rounded-full flex items-center justify-center text-brand-text-muted">
+                   <Settings size={24} className="opacity-50" />
+                </div>
+                <p className="text-[11px] uppercase tracking-widest font-extrabold text-brand-text-muted/60">Nenhum produto cadastrado no momento.</p>
               </div>
             )}
           </div>

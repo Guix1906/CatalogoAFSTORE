@@ -46,10 +46,6 @@ export default function HeroBanner() {
   const safeCurrent = slides.length ? current % slides.length : 0;
   const activeSlide = slides[safeCurrent];
 
-  if (!activeSlide) {
-    return null;
-  }
-
   useEffect(() => {
     let active = true;
 
@@ -85,6 +81,10 @@ export default function HeroBanner() {
   useEffect(() => {
     setCurrent((prev) => (prev >= slides.length ? 0 : prev));
   }, [slides.length]);
+
+  if (!activeSlide) {
+    return null;
+  }
 
   return (
     <div className="relative h-[60vh] w-full overflow-hidden bg-brand-bg">

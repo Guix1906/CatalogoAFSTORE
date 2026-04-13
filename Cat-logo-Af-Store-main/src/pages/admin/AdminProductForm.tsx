@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { adminAuthService } from '../../services/adminAuthService';
 import { Product } from '../../types';
-import { ChevronLeft, Save, Plus, X, UploadCloud, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, Save, UploadCloud, CheckCircle2, Trash2 } from 'lucide-react';
 import { CATEGORIES } from '../../constants';
 
 export default function AdminProductForm() {

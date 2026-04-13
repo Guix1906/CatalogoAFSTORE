@@ -9,28 +9,24 @@ const SLIDES = [
     id: 1,
     title: "Feminino — Elegance",
     subtitle: "A união entre luxo e movimento",
-    image: "/antigravity-assets/hero_banner_performance.png",
     link: "/categoria/feminino"
   },
   {
     id: 2,
     title: "Masculino — Performance",
     subtitle: "Estilo técnico para superar limites",
-    image: "https://picsum.photos/seed/fitness-hero2/1200/800",
     link: "/categoria/masculino"
   },
   {
     id: 3,
     title: "Conjuntos — Premium",
     subtitle: "O caimento perfeito para o seu treino",
-    image: "https://picsum.photos/seed/fitness-hero3/1200/800",
     link: "/categoria/conjuntos"
   },
   {
     id: 4,
     title: "Leggings — High-Tech",
     subtitle: "Tecnologia têxtil de ponta",
-    image: "https://picsum.photos/seed/fitness-hero4/1200/800",
     link: "/categoria/leggings"
   }
 ];
@@ -46,7 +42,7 @@ export default function HeroBanner() {
         id: index + 1,
         image,
       }))
-    : SLIDES;
+    : [];
   const safeCurrent = slides.length ? current % slides.length : 0;
   const activeSlide = slides[safeCurrent];
 
@@ -86,6 +82,10 @@ export default function HeroBanner() {
     setCurrent((prev) => (prev >= slides.length ? 0 : prev));
   }, [slides.length]);
 
+  if (!activeSlide) {
+    return null;
+  }
+
   return (
     <div className="relative h-[60vh] w-full overflow-hidden bg-brand-bg">
       <AnimatePresence mode="wait">
@@ -102,7 +102,6 @@ export default function HeroBanner() {
             src={activeSlide.image}
             alt={activeSlide.title}
             className="h-full w-full object-cover opacity-60"
-            referrerPolicy="no-referrer"
           />
           
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-end pb-16 px-6 text-center">

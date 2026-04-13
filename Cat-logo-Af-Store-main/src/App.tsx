@@ -32,8 +32,8 @@ function AnimatedRoutes() {
   
   return (
     <Suspense fallback={
-      <div className="h-[60vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+      <div className="fixed inset-0 top-16 pb-16 pt-12 flex items-center justify-center bg-brand-bg z-30">
+        <div className="w-8 h-8 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin" />
       </div>
     }>
       <AnimatePresence mode="wait">
@@ -61,6 +61,18 @@ function AnimatedRoutes() {
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    // Hide global loader organically after initial mounting
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+      // Pequeno timeout para dar tempo da interface estar 100% pronta e componentes de suspense montarem
+      const timeout = setTimeout(() => {
+        loader.classList.add('loader-hidden');
+      }, 300);
+      return () => clearTimeout(timeout);
+    }
+  }, []);
 
   // We check if we are in an admin route to hide common layout elements
   return (

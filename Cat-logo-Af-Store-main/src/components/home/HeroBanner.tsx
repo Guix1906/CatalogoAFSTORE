@@ -38,6 +38,7 @@ const SLIDES = [
 export default function HeroBanner() {
   const [current, setCurrent] = useState(0);
   const [heroImageUrls, setHeroImageUrls] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const configuredImages = heroImageUrls.filter(Boolean).slice(0, 4);
   const slides = configuredImages.length
@@ -59,12 +60,18 @@ export default function HeroBanner() {
         if (!active) return;
         if (config.heroImageUrls?.length) {
           setHeroImageUrls(config.heroImageUrls.slice(0, 4));
-          return;
+        } else if (config.heroImageUrl) {
+          setHeroImageUrls([config.heroImageUrl]);
+        } else {
+          setHeroImageUrls([]);
         }
-        setHeroImageUrls(config.heroImageUrl ? [config.heroImageUrl] : []);
+        setIsLoading(false);
       })
       .catch(() => {
-        if (active) setHeroImageUrls([]);
+        if (active) {
+          setHeroImageUrls([]);
+          setIsLoading(false);
+        }
       });
 
     return () => {
@@ -86,15 +93,23 @@ export default function HeroBanner() {
     setCurrent((prev) => (prev >= slides.length ? 0 : prev));
   }, [slides.length]);
 
+  if (isLoading) {
+    return (
+      <div className="relative h-[60vh] w-full overflow-hidden bg-brand-card/30 animate-pulse flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin opacity-50" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative h-[60vh] w-full overflow-hidden bg-brand-bg">
       <AnimatePresence mode="wait">
         <motion.div
           key={safeCurrent}
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -50 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
           className="absolute inset-0"
         >
           <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/20 to-transparent z-10" />
@@ -150,8 +165,8 @@ export default function HeroBanner() {
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`h-1 rounded-full transition-all ${
-              i === safeCurrent ? 'w-8 bg-brand-gold' : 'w-2 bg-brand-border'
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              i === safeCurrent ? 'w-8 bg-brand-gold' : 'w-2 bg-brand-border/80 hover:bg-brand-text-muted'
             }`}
           />
         ))}

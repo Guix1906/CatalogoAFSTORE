@@ -7,30 +7,30 @@ import { configService } from '../../services/configService';
 const SLIDES = [
   {
     id: 1,
-    title: "Feminino — Elegance",
-    subtitle: "A união entre luxo e movimento",
-    image: "https://picsum.photos/seed/fitness-hero1/1200/800",
+    title: "Coleção — Serenity",
+    subtitle: "Conforto e leveza para o seu dia",
+    image: "/antigravity-assets/banner1.jpg",
     link: "/categoria/feminino"
   },
   {
     id: 2,
-    title: "Masculino — Performance",
-    subtitle: "Estilo técnico para superar limites",
-    image: "https://picsum.photos/seed/fitness-hero2/1200/800",
-    link: "/categoria/masculino"
+    title: "Linha — Violet",
+    subtitle: "Estilo técnico com atitude",
+    image: "/antigravity-assets/banner2.jpg",
+    link: "/categoria/feminino"
   },
   {
     id: 3,
     title: "Conjuntos — Premium",
     subtitle: "O caimento perfeito para o seu treino",
-    image: "https://picsum.photos/seed/fitness-hero3/1200/800",
+    image: "/antigravity-assets/banner3.jpg",
     link: "/categoria/conjuntos"
   },
   {
     id: 4,
-    title: "Leggings — High-Tech",
-    subtitle: "Tecnologia têxtil de ponta",
-    image: "https://picsum.photos/seed/fitness-hero4/1200/800",
+    title: "Alta — Performance",
+    subtitle: "Tecnologia têxtil de ponta em movimento",
+    image: "/antigravity-assets/banner4.jpg",
     link: "/categoria/leggings"
   }
 ];

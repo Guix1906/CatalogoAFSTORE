@@ -301,7 +301,7 @@ export default function AdminProductForm() {
         </div>
 
         {error && (
-          <p className="text-xs text-red-500 font-semibold">{error}</p>
+          <p className="text-xs text-brand-gold-light font-semibold">{error}</p>
         )}
 
         {/* Description */}

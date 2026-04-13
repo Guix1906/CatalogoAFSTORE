@@ -3,11 +3,11 @@ import { supabase } from '../integrations/supabase/client';
 export const adminAuthService = {
   async isAuthenticated(): Promise<{ isAuthenticated: boolean; error?: string }> {
     const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-    if (userError || !user) {
+    if (sessionError || !session?.user) {
       return { isAuthenticated: false, error: 'Faça login para continuar.' };
     }
     return { isAuthenticated: true };
@@ -22,18 +22,18 @@ export const adminAuthService = {
 
   async isAdmin(): Promise<{ isAdmin: boolean; error?: string }> {
     const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-    if (userError || !user) {
+    if (sessionError || !session?.user) {
       return { isAdmin: false, error: 'Faça login para continuar.' };
     }
 
     const { data, error } = await supabase
       .from('user_roles')
       .select('id')
-      .eq('user_id', user.id)
+      .eq('user_id', session.user.id)
       .eq('role', 'admin')
       .maybeSingle();
 

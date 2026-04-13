@@ -1,4 +1,4 @@
-import { Search, Menu } from 'lucide-react';
+import { Search, Menu, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
@@ -25,12 +25,23 @@ export default function Header({ onMenuOpen }: HeaderProps) {
         />
       </Link>
 
-      <button 
-        onClick={() => navigate('/busca')}
-        className="p-2 -mr-2 text-brand-text-muted hover:text-brand-gold transition-colors"
-      >
-        <Search size={20} />
-      </button>
+      <div className="flex items-center gap-1 -mr-2">
+        <button 
+          onClick={() => navigate('/busca')}
+          className="p-2 text-brand-text-muted hover:text-brand-gold transition-colors"
+          aria-label="Buscar"
+        >
+          <Search size={20} />
+        </button>
+        <button 
+          onClick={() => navigate('/admin')}
+          className="p-2 text-brand-text-muted hover:text-brand-gold transition-colors"
+          title="Acesso Restrito / Painel Admin"
+          aria-label="Admin Login"
+        >
+          <User size={20} />
+        </button>
+      </div>
     </header>
   );
 }

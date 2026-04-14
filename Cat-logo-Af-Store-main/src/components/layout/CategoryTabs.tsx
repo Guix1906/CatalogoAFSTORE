@@ -9,10 +9,9 @@ const CategoryTabs = memo(function CategoryTabs() {
   const queryClient = useQueryClient();
 
   const tabs = [
-    { name: 'Todos', slug: '' },
+    { name: 'Tudo', slug: '' },
     ...CATEGORIES,
   ];
-
 
   const handlePrefetch = (slug: string) => {
     if (!slug) return;
@@ -24,8 +23,8 @@ const CategoryTabs = memo(function CategoryTabs() {
   };
 
   return (
-    <div className="sticky top-16 z-40 bg-brand-bg/95 border-b border-brand-border/40 backdrop-blur-sm">
-      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-4 py-3">
+    <div className="sticky top-16 z-40 bg-brand-bg border-b border-white/5">
+      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-4 py-4 touch-pan-x">
         {tabs.map((tab) => (
           <NavLink
             key={tab.slug}
@@ -34,10 +33,10 @@ const CategoryTabs = memo(function CategoryTabs() {
             onMouseEnter={() => handlePrefetch(tab.slug)}
             onTouchStart={() => handlePrefetch(tab.slug)}
             className={({ isActive }) => `
-              px-6 py-2 rounded-full text-[10px] font-sans font-extrabold uppercase tracking-[0.2em] transition-all whitespace-nowrap border
+              px-6 py-2.5 rounded-full text-[9px] font-sans font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border
               ${isActive 
-                ? 'bg-brand-gold border-brand-gold text-black shadow-sm scale-105' 
-                : 'bg-brand-card/50 border-brand-border/50 text-brand-text-muted active:border-brand-gold/50'}
+                ? 'bg-brand-gold border-brand-gold text-black shadow-lg shadow-brand-gold/10' 
+                : 'bg-[#181818] border-white/5 text-brand-text-muted active:scale-95'}
             `}
           >
             {tab.name}
@@ -47,6 +46,7 @@ const CategoryTabs = memo(function CategoryTabs() {
     </div>
   );
 });
+
 
 export default CategoryTabs;
 

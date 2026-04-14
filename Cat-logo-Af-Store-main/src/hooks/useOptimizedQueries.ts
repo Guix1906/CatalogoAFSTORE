@@ -23,7 +23,7 @@ export const useProducts = (page = 0, limit = 20) => {
   });
 };
 
-export const useInfiniteActiveProducts = (limit = DEFAULT_PAGE_SIZE) => {
+export const useInfiniteActiveProducts = (limit = DEFAULT_PAGE_SIZE, enabled = true) => {
   return useInfiniteQuery({
     queryKey: [...QUERY_KEYS.activeProducts, { limit }],
     queryFn: ({ pageParam = 0 }) => productService.getActiveProducts(pageParam, limit),
@@ -31,9 +31,11 @@ export const useInfiniteActiveProducts = (limit = DEFAULT_PAGE_SIZE) => {
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === limit ? allPages.length : undefined;
     },
+    enabled,
     staleTime: 1000 * 60 * 5,
   });
 };
+
 
 export const useInfiniteProductsByCategory = (category: string, limit = DEFAULT_PAGE_SIZE) => {
   return useInfiniteQuery({

@@ -25,48 +25,51 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-brand-bg/80 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-black/80 z-[60]"
           />
           <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 bottom-0 w-[85%] max-w-xs bg-brand-bg border-r border-brand-border z-[70] shadow-2xl flex flex-col"
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-0 left-0 bottom-0 w-[85%] max-w-xs bg-brand-bg border-r border-white/5 z-[70] shadow-2xl flex flex-col"
           >
-            <div className="p-4 h-16 flex items-center justify-between border-b border-brand-border">
-              <h2 className="font-serif font-bold text-brand-gold uppercase tracking-tight">Menu</h2>
-              <button onClick={onClose} className="p-2 hover:bg-brand-card rounded-full transition-colors text-brand-text">
+            <div className="p-4 h-16 flex items-center justify-between border-b border-white/5">
+              <h2 className="text-[12px] font-sans font-black text-brand-gold uppercase tracking-[0.2em]">Explore</h2>
+              <button 
+                onClick={onClose} 
+                className="p-2 hover:bg-white/5 rounded-full transition-colors text-white active:scale-90"
+              >
                 <X size={24} />
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto py-6">
-              <ul className="space-y-2">
+            <nav className="flex-1 overflow-y-auto py-8">
+              <ul className="space-y-1">
                 {MENU_ITEMS.map((item) => (
                   <li key={item.name}>
                     <Link
                       to={item.to}
                       onClick={onClose}
-                      className="w-full px-6 py-4 flex items-center justify-between hover:bg-brand-card transition-colors text-left group"
+                      className="w-full px-8 py-5 flex items-center justify-between active:bg-white/5 transition-colors text-left group"
                     >
-                      <span className="text-sm font-bold uppercase tracking-[0.2em] text-brand-text group-hover:text-brand-gold transition-colors">
+                      <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/90 group-active:text-brand-gold">
                         {item.name}
                       </span>
-                      <ChevronRight size={18} className="text-brand-text-muted group-hover:text-brand-gold transition-colors" />
+                      <ChevronRight size={16} className="text-white/20 group-active:text-brand-gold" />
                     </Link>
                   </li>
                 ))}
               </ul>
             </nav>
 
-            <div className="p-8 border-t border-brand-border space-y-4">
-              <div className="flex flex-col items-center">
-                <h1 className="text-xl font-serif font-bold tracking-tighter text-brand-gold leading-none">
-                  AF STORE
+            <div className="p-10 border-t border-white/5 flex flex-col items-center">
+              <div className="flex flex-col items-center opacity-40">
+                <h1 className="text-lg font-serif font-black italic tracking-widest text-white leading-none">
+                  AF <span className="text-brand-gold not-italic font-sans">STORE</span>
                 </h1>
-                <span className="text-[8px] uppercase tracking-[0.4em] text-brand-text-muted mt-1">
-                  Fitness com estilo
+                <span className="text-[7px] font-black uppercase tracking-[0.4em] text-white mt-2">
+                  Performance Wear
                 </span>
               </div>
             </div>
@@ -76,3 +79,4 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
     </AnimatePresence>
   );
 }
+

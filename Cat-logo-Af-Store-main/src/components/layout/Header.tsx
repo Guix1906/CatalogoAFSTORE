@@ -18,14 +18,7 @@ const Header = memo(function Header({ onMenuOpen }: HeaderProps) {
         <Menu size={20} />
       </button>
 
-      <Link to="/" className="flex items-center active:opacity-70 transition-opacity">
-        <img
-          src="/af-logo.png"
-          alt="AF Store"
-          className="h-12 w-auto object-contain invert brightness-200"
-          style={{ height: '3.5rem' }}
-        />
-      </Link>
+      <div className="flex-1" />
 
       <div className="flex items-center gap-1 -mr-2">
         <button 

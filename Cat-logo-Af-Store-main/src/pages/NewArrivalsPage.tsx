@@ -2,14 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import ProductCard from '../components/product/ProductCard';
-import { useNewArrivals } from '../hooks/useOptimizedQueries';
+import { useActiveProducts } from '../hooks/useOptimizedQueries';
 import { ChevronLeft, Sparkles } from 'lucide-react';
 import { SectionSkeleton } from '../components/layout/Skeletons';
 
 export default function NewArrivalsPage() {
   const navigate = useNavigate();
-  // Busca especializada em novidades
-  const { data: displayProducts = [], isLoading } = useNewArrivals();
+  // Mostra todas as peças cadastradas (conforme pedido pelo usuário)
+  const { data: displayProducts = [], isLoading } = useActiveProducts(0, 100);
 
   return (
     <PageWrapper>

@@ -50,20 +50,20 @@ export default function Home() {
           <>
             <HeroBanner />
             
-            {sections.bestSellers.length > 0 && (
-              <ProductSection 
-                title="Mais Vendidos" 
-                products={sections.bestSellers} 
-                layout="grid"
-              />
-            )}
-
             {sections.newArrivals.length > 0 && (
               <ProductSection 
                 title="Novidades" 
                 products={sections.newArrivals} 
                 layout="grid"
                 viewAllLink="/novidades"
+              />
+            )}
+
+            {sections.bestSellers.length > 0 && (
+              <ProductSection 
+                title="Mais Vendidos" 
+                products={sections.bestSellers} 
+                layout="grid"
               />
             )}
 
@@ -75,6 +75,7 @@ export default function Home() {
                 viewAllLink="/categoria/ofertas"
               />
             )}
+
           </>
         )}
 

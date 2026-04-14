@@ -9,9 +9,11 @@ const CategoryTabs = memo(function CategoryTabs() {
   const queryClient = useQueryClient();
 
   const tabs = [
-    { name: 'Tudo', slug: '' },
-    ...CATEGORIES,
+    { name: 'Home', slug: 'home', path: '/' },
+    { name: 'Novidades', slug: 'novidades', path: '/novidades' },
+    ...CATEGORIES.map(c => ({ ...c, path: `/categoria/${c.slug}` })),
   ];
+
 
   const handlePrefetch = (slug: string) => {
     if (!slug) return;
@@ -28,8 +30,8 @@ const CategoryTabs = memo(function CategoryTabs() {
         {tabs.map((tab) => (
           <NavLink
             key={tab.slug}
-            to={tab.slug === '' ? '/' : `/categoria/${tab.slug}`}
-            end={tab.slug === ''}
+            to={tab.path}
+            end={tab.path === '/'}
             onMouseEnter={() => handlePrefetch(tab.slug)}
             onTouchStart={() => handlePrefetch(tab.slug)}
             className={({ isActive }) => `
@@ -42,6 +44,7 @@ const CategoryTabs = memo(function CategoryTabs() {
             {tab.name}
           </NavLink>
         ))}
+
       </div>
     </div>
   );

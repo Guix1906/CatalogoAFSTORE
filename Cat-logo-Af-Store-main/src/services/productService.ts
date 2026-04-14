@@ -46,31 +46,39 @@ const sanitizePayload = (p: Partial<Product>) => ({
 });
 
 export const productService = {
-  async getActiveProducts(): Promise<Product[]> {
+  async getActiveProducts(page = 0, limit = 20): Promise<Product[]> {
     try {
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('active', true)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(page * limit, (page + 1) * limit - 1);
       
-      if (!error && data) {
+      if (error) {
+        console.error('Erro ao buscar produtos ativos no Supabase:', error);
+        // Fallback apenas se houver erro real de conexão/banco
+        return (localProducts as any[]).map(mapProduct);
+      }
+      
+      if (data) {
         return data.map(mapProduct);
       }
       
-      // Fallback para local apenas se houver algo e o cloud falhar
-      return (localProducts as any[]).map(mapProduct);
+      return [];
     } catch (err) {
+      console.error('Falha crítica ao buscar produtos:', err);
       return (localProducts as any[]).map(mapProduct);
     }
   },
 
   async getProducts(): Promise<Product[]> {
     const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-    if (error || !data || data.length === 0) {
+    if (error) {
+      console.error('Erro ao buscar todos os produtos:', error);
       return (localProducts as any[]).map(mapProduct);
     }
-    return data.map(mapProduct);
+    return (data || []).map(mapProduct);
   },
 
   async getProductById(id: string): Promise<Product | undefined> {

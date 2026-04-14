@@ -7,9 +7,13 @@ const CONFIG_FIELDS = 'id, whatsapp_number, whatsapp_message, hero_image_url, he
 export const configService = {
   async getConfig(): Promise<AppConfig> {
     try {
+      // Usamos limit(1) e order para garantir que pegamos o registro mais relevante (ou o último)
+      // evitando o erro do maybeSingle() quando há mais de um registro
       const { data, error } = await supabase
         .from('app_config')
         .select(CONFIG_FIELDS)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (error || !data) {
@@ -41,9 +45,16 @@ export const configService = {
       whatsapp_message: config.whatsappMessage,
       hero_image_url: config.heroImageUrl,
       hero_image_urls: config.heroImageUrls,
+      updated_at: new Date().toISOString(),
     };
 
-    const { data: existing } = await supabase.from('app_config').select('id').maybeSingle();
+    // Tenta pegar o ID do primeiro registro existente
+    const { data: existing } = await supabase
+      .from('app_config')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (existing) {
       const { error } = await supabase

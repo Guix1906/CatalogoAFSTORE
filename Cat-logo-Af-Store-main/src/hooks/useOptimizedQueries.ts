@@ -15,7 +15,7 @@ export const QUERY_KEYS = {
 };
 
 const DEFAULT_PAGE_SIZE = 12;
-const DEFAULT_STALE_TIME = 1000 * 60 * 10; // 10 minutos
+const DEFAULT_STALE_TIME = 1000 * 60 * 1; // 1 minuto
 
 // Hooks
 export const useProducts = (page = 0, limit = 20) => {
@@ -91,7 +91,7 @@ export const useConfig = () => {
   return useQuery({
     queryKey: QUERY_KEYS.config,
     queryFn: () => configService.getConfig(),
-    staleTime: 1000 * 60 * 60, // Config rarely changes, cache for 1 hour
+    staleTime: 1000 * 30, // 30 segundos para refletir mudanças rápidas do admin
   });
 };
 

@@ -62,6 +62,15 @@ export default function Home() {
               />
             )}
 
+            {sections.bestSellers.length > 0 && (
+              <ProductSection 
+                title="Mais Vendidos" 
+                products={sections.bestSellers} 
+                layout="grid"
+                viewAllLink="/categorias"
+              />
+            )}
+
             {sections.onSale.length > 0 && (
               <ProductSection 
                 title="Promoções" 

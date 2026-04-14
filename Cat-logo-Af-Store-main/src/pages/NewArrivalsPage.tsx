@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import ProductCard from '../components/product/ProductCard';
@@ -8,17 +8,13 @@ import { SectionSkeleton } from '../components/layout/Skeletons';
 
 export default function NewArrivalsPage() {
   const navigate = useNavigate();
-  // Forçamos o refetch para garantir que não estamos vendo cache antigo
-  const { data: allProducts, isLoading, error } = useActiveProducts(0, 100);
+  // Busca forçada com limite alto
+  const { data: allProducts, isLoading } = useActiveProducts(0, 50);
 
   const displayProducts = useMemo(() => {
     if (!allProducts || allProducts.length === 0) return [];
     return allProducts;
   }, [allProducts]);
-
-  if (error) {
-    console.error('Erro na página de novidades:', error);
-  }
 
   return (
     <PageWrapper>
@@ -32,39 +28,45 @@ export default function NewArrivalsPage() {
           </button>
           <div className="flex flex-col">
             <h2 className="text-[14px] font-sans font-black text-brand-gold uppercase tracking-[0.2em]">Novidades</h2>
-            <span className="text-[8px] font-sans font-bold text-white/40 uppercase tracking-[0.1em]">Diagnostics Mode</span>
+            <span className="text-[8px] font-sans font-bold text-white/40 uppercase tracking-[0.1em]">Lançamentos AF</span>
           </div>
         </div>
       </div>
 
+      <div className="px-6 py-8 flex items-center justify-between border-b border-white/5 mb-8">
+        <div className="flex items-center gap-2">
+           <Sparkles size={14} className="text-brand-gold" />
+           <span className="text-[10px] font-sans font-black uppercase tracking-[0.2em] text-white">
+             {isLoading ? 'Carregando Coleção...' : `${displayProducts.length} Peças Disponíveis`}
+           </span>
+        </div>
+      </div>
+
       {isLoading ? (
-        <div className="mt-8">
+        <div className="grid grid-cols-2 gap-4 px-4 pb-24">
           <SectionSkeleton titleWidth="w-0" count={8} />
         </div>
       ) : (
         <>
           {displayProducts.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 pb-24 mt-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 pb-24">
               {displayProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
-            <div className="py-24 text-center space-y-6 px-10">
-              <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto opacity-50">
-                 <AlertCircle size={32} className="text-red-500" />
+            <div className="py-24 text-center px-10 space-y-6">
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto">
+                 <Sparkles size={32} className="text-white opacity-20" />
               </div>
-              <div className="space-y-2">
-                <p className="text-[12px] font-black uppercase tracking-[0.2em] text-white">Nenhum produto encontrado</p>
-                <p className="text-[10px] text-brand-text-muted">
-                  {error ? `Erro: ${(error as Error).message}` : 'O banco de dados retornou 0 produtos ativos.'}
-                </p>
-              </div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-text-muted">
+                Novas peças chegando em breve.
+              </p>
               <button 
-                onClick={() => window.location.reload()}
-                className="btn-primary !px-8 mt-4"
+                onClick={() => navigate('/')}
+                className="btn-primary !px-8"
               >
-                Tentar Novamente
+                Explorar Loja
               </button>
             </div>
           )}
@@ -73,8 +75,3 @@ export default function NewArrivalsPage() {
     </PageWrapper>
   );
 }
-
-import { AlertCircle } from 'lucide-react';
-
-
-

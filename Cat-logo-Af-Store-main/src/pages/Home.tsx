@@ -15,14 +15,19 @@ export default function Home() {
   const { data: products, isLoading } = useActiveProducts(0, 20);
 
   const sections = useMemo(() => {
-    if (!products) return { bestSellers: [], newArrivals: [], onSale: [] };
+    if (!products || products.length === 0) return { bestSellers: [], newArrivals: [], onSale: [] };
     
+    // Novidades: tenta filtrar por isNew, se vazio, pega os mais recentes
+    const newItems = products.filter(p => p.isNew);
+    const displayNew = newItems.length > 0 ? newItems : products;
+
     return {
       bestSellers: products.filter(p => p.isBestSeller).slice(0, 4),
-      newArrivals: products.filter(p => p.isNew).slice(0, 6),
+      newArrivals: displayNew.slice(0, 6),
       onSale: products.filter(p => p.isOnSale).slice(0, 4)
     };
   }, [products]);
+
 
   // Prefetch de categorias comuns para navegação ultra-rápida (Native Feel)
   const handlePrefetch = (slug: string) => {

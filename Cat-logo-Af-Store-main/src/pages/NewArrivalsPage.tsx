@@ -8,7 +8,7 @@ import { SectionSkeleton } from '../components/layout/Skeletons';
 
 export default function NewArrivalsPage() {
   const navigate = useNavigate();
-  const { data: allProducts, isLoading } = useActiveProducts(0, 40);
+  const { data: allProducts, isLoading } = useActiveProducts(0, 100);
 
   const displayProducts = useMemo(() => {
     if (!allProducts) return [];
@@ -20,8 +20,9 @@ export default function NewArrivalsPage() {
     // Fallback: Show everything sorted by date (the newest items)
     return [...allProducts].sort((a, b) => 
       new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
-    ).slice(0, 12);
+    );
   }, [allProducts]);
+
 
   return (
     <PageWrapper>

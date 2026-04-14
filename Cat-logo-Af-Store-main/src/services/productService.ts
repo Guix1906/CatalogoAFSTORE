@@ -1,35 +1,27 @@
 import { supabase } from '../integrations/supabase/client';
-import type { Tables } from '../integrations/supabase/types';
 import { Product } from '../types';
+import localProducts from '../data/products.json';
 
-type ProductRow = Tables<'products'>;
-
-const PRODUCT_FIELDS = 'id, name, slug, category, price, original_price, discount, images, sizes, colors, description, measurements, is_new, is_best_seller, is_on_sale, active, gender, tags, created_at';
-
-const toProduct = (row: ProductRow): Product => {
-  const colors = Array.isArray(row.colors)
-    ? (row.colors as Product['colors'])
-    : undefined;
-
+const toProduct = (row: any): Product => {
   return {
     id: row.id,
     name: row.name,
     slug: row.slug,
-    category: row.category as Product['category'],
+    category: row.category,
     price: Number(row.price),
-    originalPrice: row.original_price !== null ? Number(row.original_price) : undefined,
-    discount: row.discount ?? undefined,
-    images: Array.isArray(row.images) ? (row.images as string[]) : [],
-    sizes: (row.sizes as Product['sizes']) || ['P', 'M', 'G'],
-    colors,
+    originalPrice: row.original_price ? Number(row.original_price) : undefined,
+    discount: row.discount || undefined,
+    images: Array.isArray(row.images) ? row.images : [],
+    sizes: Array.isArray(row.sizes) ? row.sizes : ['P', 'M', 'G'],
+    colors: Array.isArray(row.colors) ? row.colors : [],
     description: row.description || '',
-    measurements: row.measurements ?? undefined,
-    isNew: row.is_new,
-    isBestSeller: row.is_best_seller,
-    isOnSale: row.is_on_sale,
-    active: row.active,
-    gender: (row.gender as Product['gender']) || 'unissex',
-    tags: row.tags || [],
+    measurements: row.measurements || undefined,
+    isNew: row.is_new ?? false,
+    isBestSeller: row.is_best_seller ?? false,
+    isOnSale: row.is_on_sale ?? false,
+    active: row.active ?? true,
+    gender: row.gender || 'feminino',
+    tags: Array.isArray(row.tags) ? row.tags : [],
     createdAt: row.created_at,
   };
 };
@@ -70,105 +62,65 @@ const sanitizePayload = (product: Partial<Product>) => {
 };
 
 export const productService = {
-  async getProducts(page = 0, limit = 50): Promise<Product[]> {
-    const from = page * limit;
-    const to = from + limit - 1;
-
-    const { data, error } = await supabase
-      .from('products')
-      .select(PRODUCT_FIELDS)
-      .order('created_at', { ascending: false })
-      .range(from, to);
-
-    if (error) throw error;
-    return (data || []).map(toProduct);
-  },
-
   async getActiveProducts(page = 0, limit = 50): Promise<Product[]> {
-    const from = page * limit;
-    const to = from + limit - 1;
-
     try {
-      console.log(`Buscando produtos ativos (página ${page}, limite ${limit})...`);
       const { data, error } = await supabase
         .from('products')
-        .select(PRODUCT_FIELDS)
+        .select('*')
         .eq('active', true)
-        .order('created_at', { ascending: false })
-        .range(from, to);
+        .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Erro ao buscar produtos ativos:', error);
-        throw error;
-      }
+      if (error) throw error;
+      if (data && data.length > 0) return data.map(toProduct);
 
-      // Fallback de emergência: Se não houver produtos marcados como ativos, 
-      // mas o desenvolvedor diz que "deveria ter", buscamos qualquer produto 
-      // para não deixar a tela em branco por erro de flag.
-      if (!data || data.length === 0) {
-        console.warn('Nenhum produto ativo encontrado. Tentando fallback para qualquer produto...');
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('products')
-          .select(PRODUCT_FIELDS)
-          .order('created_at', { ascending: false })
-          .range(from, to)
-          .limit(limit);
-
-        if (fallbackError) throw fallbackError;
-        if (fallbackData && fallbackData.length > 0) {
-          console.log(`Fallback bem sucedido: ${fallbackData.length} produtos encontrados.`);
-          return fallbackData.map(toProduct);
-        }
-      }
-
-      return (data || []).map(toProduct);
+      return (localProducts as any[]).map(p => ({ ...p, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller, isOnSale: !!p.isOnSale }));
     } catch (err) {
-      console.error('Falha crítica no serviço de produtos:', err);
-      return [];
+      console.warn('Usando catálogo local:', err);
+      return (localProducts as any[]).map(p => ({ ...p, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller, isOnSale: !!p.isOnSale }));
     }
   },
-
 
   async getProductById(id: string): Promise<Product | undefined> {
     const { data, error } = await supabase
       .from('products')
-      .select(PRODUCT_FIELDS)
+      .select('*')
       .eq('id', id)
       .maybeSingle();
 
-    if (error) throw error;
-    return data ? toProduct(data) : undefined;
+    if (error || !data) {
+      return (localProducts as any[]).find(p => p.id === id);
+    }
+    return toProduct(data);
   },
 
-  async getProductsByCategory(categorySlug: string, page = 0, limit = 50): Promise<Product[]> {
-    const from = page * limit;
-    const to = from + limit - 1;
-
+  async getProductsByCategory(category: string, page = 0, limit = 50): Promise<Product[]> {
     const { data, error } = await supabase
       .from('products')
-      .select(PRODUCT_FIELDS)
+      .select('*')
       .eq('active', true)
-      .eq('category', categorySlug)
-      .order('created_at', { ascending: false })
-      .range(from, to);
+      .eq('category', category)
+      .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return (data || []).map(toProduct);
+    if (error || !data || data.length === 0) {
+      return (localProducts as any[]).filter(p => p.category === category);
+    }
+    return data.map(toProduct);
   },
 
   async searchProducts(query: string): Promise<Product[]> {
     if (!query.trim()) return [];
-
     const { data, error } = await supabase
       .from('products')
-      .select(PRODUCT_FIELDS)
+      .select('*')
       .eq('active', true)
       .or(`name.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`)
-      .order('created_at', { ascending: false })
       .limit(20);
 
-    if (error) throw error;
-    return (data || []).map(toProduct);
+    if (error || !data || data.length === 0) {
+      const q = query.toLowerCase();
+      return (localProducts as any[]).filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+    }
+    return data.map(toProduct);
   },
 
   async createProduct(product: Partial<Product>): Promise<Product> {
@@ -176,7 +128,7 @@ export const productService = {
     const { data, error } = await supabase
       .from('products')
       .insert(payload)
-      .select(PRODUCT_FIELDS)
+      .select('*')
       .single();
 
     if (error) throw error;
@@ -189,7 +141,7 @@ export const productService = {
       .from('products')
       .update(payload)
       .eq('id', id)
-      .select(PRODUCT_FIELDS)
+      .select('*')
       .single();
 
     if (error) throw error;
@@ -206,4 +158,3 @@ export const productService = {
     if (error) throw error;
   },
 };
-

@@ -398,6 +398,14 @@ export default function AdminProductForm() {
                    </div>
                  </label>
 
+                 <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-colors ${formData.isNew ? 'bg-brand-gold/5 border-brand-gold/20' : 'bg-transparent border-white/5 opacity-60'}`}>
+                   <input type="checkbox" checked={formData.isNew} onChange={e => setFormData({...formData, isNew: e.target.checked})} className="w-4 h-4 accent-brand-gold" />
+                   <div>
+                     <span className="block text-[11px] font-bold uppercase tracking-widest text-brand-gold">Novidade</span>
+                     <span className="block text-[9px] text-[#888] mt-0.5">Aparece na aba Novidades</span>
+                   </div>
+                 </label>
+
                  <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-colors ${formData.isOnSale ? 'bg-red-500/5 border-red-500/20' : 'bg-transparent border-white/5 opacity-60'}`}>
                    <input type="checkbox" checked={formData.isOnSale} onChange={e => setFormData({...formData, isOnSale: e.target.checked})} className="w-4 h-4 accent-red-500" />
                    <div>

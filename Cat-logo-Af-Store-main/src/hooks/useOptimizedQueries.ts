@@ -14,13 +14,15 @@ export const QUERY_KEYS = {
   search: (query: string) => ['products', 'search', query] as const,
 };
 
-const DEFAULT_PAGE_SIZE = 8;
+const DEFAULT_PAGE_SIZE = 12;
+const DEFAULT_STALE_TIME = 1000 * 60 * 10; // 10 minutos
 
 // Hooks
 export const useProducts = (page = 0, limit = 20) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.products, { page, limit }],
     queryFn: () => productService.getProducts(page, limit),
+    staleTime: DEFAULT_STALE_TIME,
   });
 };
 
@@ -33,7 +35,7 @@ export const useInfiniteActiveProducts = (limit = DEFAULT_PAGE_SIZE, enabled = t
       return lastPage.length === limit ? allPages.length : undefined;
     },
     enabled,
-    staleTime: 1000 * 60 * 5,
+    staleTime: DEFAULT_STALE_TIME,
   });
 };
 
@@ -55,6 +57,7 @@ export const useActiveProducts = (page = 0, limit = DEFAULT_PAGE_SIZE) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.activeProducts, { page, limit }],
     queryFn: () => productService.getActiveProducts(page, limit),
+    staleTime: DEFAULT_STALE_TIME,
   });
 };
 
@@ -71,6 +74,7 @@ export const useProductsByCategory = (category: string, page = 0, limit = DEFAUL
     queryKey: QUERY_KEYS.productsByCategory(category),
     queryFn: () => productService.getProductsByCategory(category, page, limit),
     enabled: !!category,
+    staleTime: DEFAULT_STALE_TIME,
   });
 };
 

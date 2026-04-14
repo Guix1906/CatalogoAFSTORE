@@ -48,17 +48,18 @@ const sanitizePayload = (p: Partial<Product>) => ({
 export const productService = {
   async getActiveProducts(): Promise<Product[]> {
     try {
-      const allItems: Product[] = (localProducts as any[]).map(mapProduct);
-      const { data, error } = await supabase.from('products').select('*').eq('active', true);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('active', true)
+        .order('created_at', { ascending: false });
       
-      if (!error && data && data.length > 0) {
-        const cloudItems = data.map(mapProduct);
-        const cloudIds = new Set(cloudItems.map(i => i.id));
-        return [...cloudItems, ...allItems.filter(i => !cloudIds.has(i.id))].sort((a, b) => 
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+      if (!error && data) {
+        return data.map(mapProduct);
       }
-      return allItems;
+      
+      // Fallback para local apenas se houver algo e o cloud falhar
+      return (localProducts as any[]).map(mapProduct);
     } catch (err) {
       return (localProducts as any[]).map(mapProduct);
     }

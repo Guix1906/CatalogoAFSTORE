@@ -19,10 +19,12 @@ const Header = memo(function Header({ onMenuOpen }: HeaderProps) {
       </button>
 
       <Link to="/" className="flex items-center active:opacity-70 transition-opacity">
-        <div className="flex flex-col items-center">
-           <span className="text-[14px] font-serif font-black italic text-white tracking-widest">AF <span className="text-brand-gold font-sans not-italic">STORE</span></span>
-           <span className="text-[7px] font-sans font-black uppercase tracking-[0.4em] text-brand-gold-light">Performance Wear</span>
-        </div>
+        <img
+          src="/af-logo.png"
+          alt="AF Store"
+          className="h-12 w-auto object-contain invert brightness-200"
+          style={{ height: '3.5rem' }}
+        />
       </Link>
 
       <div className="flex items-center gap-1 -mr-2">

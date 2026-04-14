@@ -64,11 +64,13 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
             </nav>
 
             <div className="p-10 border-t border-white/5 flex flex-col items-center">
-              <div className="flex flex-col items-center opacity-40">
-                <h1 className="text-lg font-serif font-black italic tracking-widest text-white leading-none">
-                  AF <span className="text-brand-gold not-italic font-sans">STORE</span>
-                </h1>
-                <span className="text-[7px] font-black uppercase tracking-[0.4em] text-white mt-2">
+              <div className="flex flex-col items-center opacity-80">
+                <img
+                  src="/af-logo.png"
+                  alt="AF Store"
+                  className="h-16 w-auto object-contain invert brightness-200"
+                />
+                <span className="text-[7px] font-black uppercase tracking-[0.4em] text-white mt-1">
                   Performance Wear
                 </span>
               </div>

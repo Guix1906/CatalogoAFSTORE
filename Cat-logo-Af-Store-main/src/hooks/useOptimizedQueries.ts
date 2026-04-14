@@ -7,8 +7,11 @@ import { Product } from '../types';
 export const QUERY_KEYS = {
   products: ['products'] as const,
   activeProducts: ['products', 'active'] as const,
+  infiniteActiveProducts: (limit: number) => ['products', 'active', 'infinite', limit] as const,
   newArrivals: ['products', 'new'] as const,
   productsByCategory: (category: string) => ['products', 'category', category] as const,
+  infiniteProductsByCategory: (category: string, limit: number) =>
+    ['products', 'category', 'infinite', category, limit] as const,
   product: (id: string) => ['product', id] as const,
   config: ['config'] as const,
   search: (query: string) => ['products', 'search', query] as const,
@@ -28,7 +31,7 @@ export const useProducts = (page = 0, limit = 20) => {
 
 export const useInfiniteActiveProducts = (limit = DEFAULT_PAGE_SIZE, enabled = true) => {
   return useInfiniteQuery({
-    queryKey: [...QUERY_KEYS.activeProducts, { limit }],
+    queryKey: QUERY_KEYS.infiniteActiveProducts(limit),
     queryFn: ({ pageParam = 0 }) => productService.getActiveProducts(pageParam, limit),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
@@ -42,7 +45,7 @@ export const useInfiniteActiveProducts = (limit = DEFAULT_PAGE_SIZE, enabled = t
 
 export const useInfiniteProductsByCategory = (category: string, limit = DEFAULT_PAGE_SIZE) => {
   return useInfiniteQuery({
-    queryKey: QUERY_KEYS.productsByCategory(category),
+    queryKey: QUERY_KEYS.infiniteProductsByCategory(category, limit),
     queryFn: ({ pageParam = 0 }) => productService.getProductsByCategory(category, pageParam, limit),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {

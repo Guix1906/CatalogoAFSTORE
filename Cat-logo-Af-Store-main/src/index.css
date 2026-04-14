@@ -1,8 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "DM Serif Display", ui-serif, Georgia, serif;
 
   --color-brand-bg: #0b0b0b;
@@ -22,8 +21,8 @@
   }
 
   body {
-    background: linear-gradient(180deg, #0b0b0b 0%, #121212 100%);
-    @apply text-brand-text font-sans antialiased min-h-screen;
+    background: #0b0b0b;
+    @apply text-brand-text font-sans antialiased min-h-screen overscroll-none;
     line-height: 1.6;
     letter-spacing: -0.01em;
   }

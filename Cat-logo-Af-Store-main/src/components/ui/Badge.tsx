@@ -14,10 +14,10 @@ interface BadgeProps {
 
 export default function Badge({ children, variant = 'default', className }: BadgeProps) {
   const variants = {
-    gold: 'bg-gradient-to-br from-brand-gold to-brand-gold-light text-black border border-brand-gold/50 shadow-lg shadow-brand-gold/20',
-    sale: 'bg-black text-brand-gold border border-brand-gold/30',
+    gold: 'bg-brand-gold text-black border border-brand-gold/20',
+    sale: 'bg-black text-brand-gold border border-white/10',
     new: 'bg-brand-gold/10 text-brand-gold border border-brand-gold/30',
-    default: 'bg-brand-card text-brand-text-muted border border-brand-border',
+    default: 'bg-[#181818] text-brand-text-muted border border-white/5',
   };
 
   return (

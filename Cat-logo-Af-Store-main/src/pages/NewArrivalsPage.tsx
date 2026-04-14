@@ -2,19 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
 import ProductCard from '../components/product/ProductCard';
-import { useActiveProducts } from '../hooks/useOptimizedQueries';
+import { useNewArrivals } from '../hooks/useOptimizedQueries';
 import { ChevronLeft, Sparkles } from 'lucide-react';
 import { SectionSkeleton } from '../components/layout/Skeletons';
 
 export default function NewArrivalsPage() {
   const navigate = useNavigate();
-  // Busca forçada com limite alto
-  const { data: allProducts, isLoading } = useActiveProducts(0, 50);
-
-  const displayProducts = useMemo(() => {
-    if (!allProducts || allProducts.length === 0) return [];
-    return allProducts;
-  }, [allProducts]);
+  // Busca especializada em novidades
+  const { data: displayProducts = [], isLoading } = useNewArrivals();
 
   return (
     <PageWrapper>

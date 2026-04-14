@@ -4,29 +4,27 @@ import HeroBanner from '../components/home/HeroBanner';
 import CategoryTabs from '../components/layout/CategoryTabs';
 import ProductSection from '../components/home/ProductSection';
 import WhatsAppBanner from '../components/home/WhatsAppBanner';
-import { useActiveProducts, QUERY_KEYS } from '../hooks/useOptimizedQueries';
+import { useActiveProducts, useNewArrivals, QUERY_KEYS } from '../hooks/useOptimizedQueries';
 import { SectionSkeleton, HeroSkeleton } from '../components/layout/Skeletons';
 import { useQueryClient } from '@tanstack/react-query';
 import { productService } from '../services/productService';
 
 export default function Home() {
   const queryClient = useQueryClient();
-  // Carrega apenas 20 para ter conteúdo suficiente mas sem pesar
-  const { data: products, isLoading } = useActiveProducts(0, 20);
+  const { data: products, isLoading: productsLoading } = useActiveProducts(0, 20);
+  const { data: newArrivals = [], isLoading: newLoading } = useNewArrivals();
+
+  const isLoading = productsLoading || newLoading;
 
   const sections = useMemo(() => {
-    if (!products || products.length === 0) return { bestSellers: [], newArrivals: [], onSale: [] };
+    if (!products || products.length === 0) return { bestSellers: [], newArrivals: newArrivals.slice(0, 6), onSale: [] };
     
-    // Novidades: tenta filtrar por isNew, se vazio, pega os mais recentes
-    const newItems = products.filter(p => p.isNew);
-    const displayNew = newItems.length > 0 ? newItems : products;
-
     return {
       bestSellers: products.filter(p => p.isBestSeller).slice(0, 4),
-      newArrivals: displayNew.slice(0, 6),
+      newArrivals: newArrivals.slice(0, 6),
       onSale: products.filter(p => p.isOnSale).slice(0, 4)
     };
-  }, [products]);
+  }, [products, newArrivals]);
 
 
   // Prefetch de categorias comuns para navegação ultra-rápida (Native Feel)

@@ -7,6 +7,7 @@ import { Product } from '../types';
 export const QUERY_KEYS = {
   products: ['products'] as const,
   activeProducts: ['products', 'active'] as const,
+  newArrivals: ['products', 'new'] as const,
   productsByCategory: (category: string) => ['products', 'category', category] as const,
   product: (id: string) => ['product', id] as const,
   config: ['config'] as const,
@@ -54,6 +55,14 @@ export const useActiveProducts = (page = 0, limit = DEFAULT_PAGE_SIZE) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.activeProducts, { page, limit }],
     queryFn: () => productService.getActiveProducts(page, limit),
+  });
+};
+
+export const useNewArrivals = () => {
+  return useQuery({
+    queryKey: QUERY_KEYS.newArrivals,
+    queryFn: () => productService.getNewArrivals(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 

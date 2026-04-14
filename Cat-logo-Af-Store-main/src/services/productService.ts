@@ -107,6 +107,28 @@ export const productService = {
     return data.map(mapProduct);
   },
 
+  async getNewArrivals(): Promise<Product[]> {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('active', true)
+      .eq('is_new', true)
+      .order('created_at', { ascending: false });
+    
+    if (error || !data || data.length === 0) {
+      // Se não houver produtos marcados como novos no banco, retorna os mais recentes
+      const { data: recentData } = await supabase
+        .from('products')
+        .select('*')
+        .eq('active', true)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      return (recentData || []).map(mapProduct);
+    }
+    return data.map(mapProduct);
+  },
+
   async searchProducts(query: string): Promise<Product[]> {
     const q = query.toLowerCase();
     const { data, error } = await supabase.from('products').select('*').eq('active', true).or(`name.ilike.%${q}%,category.ilike.%${q}%,description.ilike.%${q}%`);

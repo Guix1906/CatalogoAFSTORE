@@ -8,21 +8,19 @@ import { SectionSkeleton } from '../components/layout/Skeletons';
 
 export default function NewArrivalsPage() {
   const navigate = useNavigate();
+  // Buscamos um número maior de produtos para garantir que o catálogo apareça
   const { data: allProducts, isLoading } = useActiveProducts(0, 100);
 
   const displayProducts = useMemo(() => {
-    if (!allProducts) return [];
+    if (!allProducts || allProducts.length === 0) return [];
     
-    // First priority: Items explicitly marked as new
+    // Tentamos filtrar pelos marcados como novos primeiro
     const markedNew = allProducts.filter(p => p.isNew);
-    if (markedNew.length > 0) return markedNew;
-
-    // Fallback: Show everything sorted by date (the newest items)
-    return [...allProducts].sort((a, b) => 
-      new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
-    );
+    
+    // Se houver marcados como novos, mostramos eles. 
+    // Caso contrário, mostramos TODO o catálogo que foi carregado, ordenado por data.
+    return markedNew.length > 0 ? markedNew : allProducts;
   }, [allProducts]);
-
 
   return (
     <PageWrapper>
@@ -36,7 +34,7 @@ export default function NewArrivalsPage() {
           </button>
           <div className="flex flex-col">
             <h2 className="text-[14px] font-sans font-black text-brand-gold uppercase tracking-[0.2em]">Novidades</h2>
-            <span className="text-[8px] font-sans font-bold text-white/40 uppercase tracking-[0.1em]">Coleção Exclusiva</span>
+            <span className="text-[8px] font-sans font-bold text-white/40 uppercase tracking-[0.1em]">Catalogo Completo</span>
           </div>
         </div>
       </div>
@@ -45,18 +43,18 @@ export default function NewArrivalsPage() {
         <div className="flex items-center gap-2">
            <Sparkles size={14} className="text-brand-gold" />
            <span className="text-[10px] font-sans font-black uppercase tracking-[0.2em] text-white">
-             {isLoading ? '...' : `${displayProducts.length} Lançamentos`}
+             {isLoading ? 'Carregando...' : `${displayProducts.length} Peças no Catálogo`}
            </span>
         </div>
       </div>
 
       {isLoading ? (
         <div className="mt-8">
-          <SectionSkeleton titleWidth="w-0" count={6} />
+          <SectionSkeleton titleWidth="w-0" count={8} />
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 pb-24">
-          {displayProducts.map(product => (
+          {displayProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -67,10 +65,19 @@ export default function NewArrivalsPage() {
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto opacity-20">
              <Sparkles size={32} className="text-white" />
           </div>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-text-muted">Próxima drop em breve...</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-text-muted px-10">
+            Nenhum produto ativo encontrado no catálogo. Verifique o painel administrativo.
+          </p>
+          <button 
+            onClick={() => navigate('/')}
+            className="btn-primary !px-8"
+          >
+            Voltar ao Início
+          </button>
         </div>
       )}
     </PageWrapper>
   );
 }
+
 

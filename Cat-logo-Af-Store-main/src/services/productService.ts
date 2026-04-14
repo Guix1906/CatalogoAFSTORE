@@ -62,7 +62,24 @@ const sanitizePayload = (product: Partial<Product>) => {
 };
 
 export const productService = {
+  async getProducts(page = 0, limit = 50): Promise<Product[]> {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      if (data && data.length > 0) return data.map(toProduct);
+      return (localProducts as any[]).map(p => ({ ...p, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller, isOnSale: !!p.isOnSale }));
+    } catch (err) {
+      console.warn('Erro ao carregar lista completa, usando local:', err);
+      return (localProducts as any[]).map(p => ({ ...p, isNew: !!p.isNew, isBestSeller: !!p.isBestSeller, isOnSale: !!p.isOnSale }));
+    }
+  },
+
   async getActiveProducts(page = 0, limit = 50): Promise<Product[]> {
+
     try {
       const { data, error } = await supabase
         .from('products')

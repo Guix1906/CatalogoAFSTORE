@@ -64,14 +64,6 @@ export default function Home() {
               />
             )}
 
-            {sections.bestSellers.length > 0 && (
-              <ProductSection 
-                title="Mais Vendidos" 
-                products={sections.bestSellers} 
-                layout="grid"
-              />
-            )}
-
             {sections.onSale.length > 0 && (
               <ProductSection 
                 title="Promoções" 
@@ -80,6 +72,7 @@ export default function Home() {
                 viewAllLink="/categoria/ofertas"
               />
             )}
+
 
           </>
         )}

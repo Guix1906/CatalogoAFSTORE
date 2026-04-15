@@ -17,6 +17,8 @@ export type Database = {
       app_config: {
         Row: {
           created_at: string
+          hero_image_url: string | null
+          hero_image_urls: string[] | null
           id: string
           updated_at: string
           whatsapp_message: string
@@ -24,6 +26,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          hero_image_url?: string | null
+          hero_image_urls?: string[] | null
           id?: string
           updated_at?: string
           whatsapp_message: string
@@ -31,6 +35,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          hero_image_url?: string | null
+          hero_image_urls?: string[] | null
           id?: string
           updated_at?: string
           whatsapp_message?: string

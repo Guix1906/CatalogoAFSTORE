@@ -82,7 +82,7 @@ export default function AdminDashboard() {
               const reader = new FileReader();
               reader.onload = () => resolve(String(reader.result));
               reader.onerror = () => reject(new Error('Falha ao ler imagens.'));
-              reader.readAsDataURL(file);
+              reader.readAsDataURL(file as File);
             })
         )
       );

@@ -72,8 +72,12 @@ export const productService = {
     }
   },
 
-  async getProducts(): Promise<Product[]> {
-    const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+  async getProducts(page = 0, limit = 50): Promise<Product[]> {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .range(page * limit, (page + 1) * limit - 1);
     if (error) {
       console.error('Erro ao buscar todos os produtos:', error);
       return (localProducts as any[]).map(mapProduct);
@@ -108,10 +112,20 @@ export const productService = {
     await supabase.from('products').delete().eq('id', id);
   },
 
-  async getProductsByCategory(category: string): Promise<Product[]> {
-    const { data, error } = await supabase.from('products').select('*').eq('active', true).eq('category', category);
+  async getProductsByCategory(category: string, page = 0, limit = 20): Promise<Product[]> {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('active', true)
+      .eq('category', category)
+      .order('created_at', { ascending: false })
+      .range(page * limit, (page + 1) * limit - 1);
+      
     if (error || !data || data.length === 0) {
-      return (localProducts as any[]).filter(p => p.category === category).map(mapProduct);
+      return (localProducts as any[])
+        .filter(p => p.category === category)
+        .slice(page * limit, (page + 1) * limit)
+        .map(mapProduct);
     }
     return data.map(mapProduct);
   },
